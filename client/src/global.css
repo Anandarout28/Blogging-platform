@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Praise&display=swap');
+/* General Styles */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  /* Container */
+  .MDBContainer {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 2rem;
+  }
+  
+  /* Tabs */
+  .MDBTabs {
+    border-bottom: 2px solid #ddd;
+  }
+  
+  .MDBTabsItem {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .MDBTabsLink {
+    font-weight: bold;
+    color: #6a11cb;
+    transition: color 0.3s ease;
+  }
+  
+  .MDBTabsLink.active {
+    color: #2575fc;
+    border-bottom: 2px solid #2575fc;
+  }
+  
+  /* Buttons */
+  .MDBBtn {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+  }
+  
+  .MDBBtn:hover {
+    background: linear-gradient(135deg, #2575fc, #6a11cb);
+  }
+  
+  /* Inputs */
+  .MDBInput input {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 0.5rem;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
+  
+  .MDBInput input:focus {
+    border-color: #2575fc;
+    outline: none;
+  }
+  
+  /* Links */
+  a {
+    color: #2575fc;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  a:hover {
+    color: #6a11cb;
+  }
+  
+  /* Checkbox */
+  .MDBCheckbox input[type='checkbox'] + label {
+    color: #333;
+    font-size: 0.9rem;
+  }
+  
+  /* Centered Text */
+  .text-center {
+    color: #666;
+    font-size: 0.9rem;
+  }
