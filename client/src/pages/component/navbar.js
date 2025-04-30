@@ -33,7 +33,7 @@ function NavbarComponent() { // Renamed to follow React naming conventions
 </Col>
         {/* SignIN Button on the Right */}
         <Col xs="auto">
-          <StyledButton onClick={() => navigate('/signin')}>SignIN</StyledButton>
+          <StyledButton onClick={() => navigate('/signin')}>Signin</StyledButton>
         </Col>
       </Row>
     </StyledNavbar>
