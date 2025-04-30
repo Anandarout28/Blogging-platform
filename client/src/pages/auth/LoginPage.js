@@ -1,8 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import "./login.css";
 import * as Components from "./Components";
+
 function Signin() {
   const [signIn, toggle] = React.useState(true);
+  const navigate = useNavigate(); // Add useNavigate hook
+
   return (
     <Components.Container>
       <Components.SignUpContainer signingIn={signIn}>
@@ -19,7 +23,15 @@ function Signin() {
           <Components.Title>Sign in</Components.Title>
           <Components.Input type="email" placeholder="Email" />
           <Components.Input type="password" placeholder="Password" />
-          <Components.Anchor href="#">Forgot your password?</Components.Anchor>
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault(); // Prevent default anchor behavior
+              navigate('/otpVerify'); // Navigate to OTP verification page
+            }}
+          >
+            Forgot your password?
+          </a>
           <Components.Button>Sign In</Components.Button>
         </Components.Form>
       </Components.SignInContainer>
@@ -46,8 +58,7 @@ function Signin() {
         </Components.Overlay>
       </Components.OverlayContainer>
     </Components.Container>
-    );
-  }
-
+  );
+}
 
 export default Signin;
