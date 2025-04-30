@@ -7,11 +7,16 @@ import Navbar from './pages/component/navbar'; // Updated import with uppercase 
 
 function Home() {
   return (
+  
+    
+
     <HomeWrapper>
+    
       <div className="container">
-        <Navbar /> {/* Corrected usage of Navbar */}
+      <Navbar/>   {/* Corrected usage of Navbar */}
       </div>
     </HomeWrapper>
+ 
   );
 }
 
