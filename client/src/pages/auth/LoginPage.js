@@ -11,6 +11,21 @@ function Signin() {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState('');
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios.post('http://localhost:8000/', {name,email,password})
+      .then((result) => console.log(result))
+      .catch((error) => console.log(error));
+
+    if (!email.includes('@')) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+    if (password.length < 6) {
+      alert('Password must be at least 6 characters long.');
+      return;
+    }
+  };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -51,17 +66,39 @@ function Signin() {
   };
 
   return (
+    //SignUP
+
     <Components.Container>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <Components.SignUpContainer signingIn={signIn}>
         <Components.Form onSubmit={handleSignUp}>
           <Components.Title>Create Account</Components.Title>
-          <Components.Input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
-          <Components.Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <Components.Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <Components.Input 
+           type="text" 
+           placeholder="Name"
+           value={name} 
+           onChange={(e) => setName(e.target.value)} 
+           />
+
+          <Components.Input 
+          type="email" 
+          placeholder="Email" 
+          value={email} 
+          onChange={(e) => setEmail(e.target.value)} 
+          />
+
+          <Components.Input 
+          type="password" 
+          placeholder="Password" 
+          value={password} 
+          onChange={(e) => setPassword(e.target.value)}
+           />
+
           <Components.Button type="submit">Sign Up</Components.Button>
         </Components.Form>
+
       </Components.SignUpContainer>
+      //SignIN
       <Components.SignInContainer signingIn={signIn}>
         <Components.Form onSubmit={handleSignIn}>
           <Components.Title>Sign in</Components.Title>
