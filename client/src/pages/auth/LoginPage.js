@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./login.css";
 import * as Components from "./Components";
-import axios from 'axios'; // Import axios
+import axios from 'axios';
 
 function Signin() {
   const [signIn, toggle] = React.useState(true);
@@ -11,26 +11,12 @@ function Signin() {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState('');
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    axios.post('http://localhost:8000/', {name,email,password})
-      .then((result) => console.log(result))
-      .catch((error) => console.log(error));
-
-    if (!email.includes('@')) {
-      alert('Please enter a valid email address.');
-      return;
-    }
-    if (password.length < 6) {
-      alert('Password must be at least 6 characters long.');
-      return;
-    }
-  };
-
+  
   const handleSignUp = async (e) => {
     e.preventDefault();
-    if (!email.includes('@')) {
-      alert('Please enter a valid email address.');
+    // Validate input fields
+    if (!name || !email || !password) {
+      alert('Please fill in all fields.');
       return;
     }
     if (password.length < 6) {
@@ -38,39 +24,48 @@ function Signin() {
       return;
     }
     try {
-      const response = await axios.post('http://localhost:5000/api/register', {
+      // Make API call to register endpoint
+      const response = await axios.post('http://localhost:8000/api/v1/users/register', {
         name,
         email,
         password,
       });
+      // Log the response for debugging
+      console.log('Registration Response:', response.data);
+      // Show success message and navigate to the sign-in page
       alert('Registration successful! Please log in.');
-      toggle(true); // Switch to Sign In form
+      toggle(true); // Switch to the Sign In form
+      navigate('/signin');
     } catch (error) {
-      console.error('Registration failed:', error.response?.data?.message || error.message);
+      // Handle errors and set error message
+      setError(error.response?.data?.message || 'Registration failed. Please try again.');
     }
   };
 
   const handleSignIn = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/login', {
+      const response = await axios.post('http://localhost:8000/api/v1/users/login', {
         email,
         password,
       });
-      localStorage.setItem('accessToken', response.data.accessToken);
+      console.log('Login Response:', response.data); // Log the response data
+      localStorage.setItem('accessToken', response.data.accessToken); // Store the token
       alert('Login successful!');
-      navigate('/dashboard'); // Navigate to dashboard on successful login
+      navigate('/home'); 
     } catch (error) {
       setError(error.response?.data?.message || 'Login failed');
     }
   };
 
+
   return (
+
     //SignUP
 
     <Components.Container>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <Components.SignUpContainer signingIn={signIn}>
+      <Components.SignUpContainer signIn={signIn}>
         <Components.Form onSubmit={handleSignUp}>
           <Components.Title>Create Account</Components.Title>
           <Components.Input 
@@ -98,8 +93,12 @@ function Signin() {
         </Components.Form>
 
       </Components.SignUpContainer>
-      //SignIN
+
+
+      //SignIn  
       <Components.SignInContainer signingIn={signIn}>
+
+
         <Components.Form onSubmit={handleSignIn}>
           <Components.Title>Sign in</Components.Title>
           <Components.Input
@@ -122,8 +121,9 @@ function Signin() {
           >
             Forgot your password?
           </Components.Anchor>
-          <Components.Button type="submit">Sign In</Components.Button>
+          <Components.Button >Sign In</Components.Button>
         </Components.Form>
+
       </Components.SignInContainer>
       <Components.OverlayContainer signingIn={signIn}>
         <Components.Overlay signingIn={signIn}>
@@ -139,10 +139,10 @@ function Signin() {
           <Components.RightOverlayPanel signingIn={signIn}>
             <Components.Title>Hello, Friend!</Components.Title>
             <Components.Paragraph>
-              Enter your personal details and start journey with us
+              Enter your personal details and start your journey with us
             </Components.Paragraph>
             <Components.GhostButton onClick={() => toggle(false)}>
-              Sign Up
+              Sign up
             </Components.GhostButton>
           </Components.RightOverlayPanel>
         </Components.Overlay>

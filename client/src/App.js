@@ -5,13 +5,17 @@ import Signin from './pages/auth/LoginPage';
 import OtpVerify from './pages/auth/otpVerifactionpage'; // Importing the OTP verification page
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './pages/component/navbar'; // Updated import with uppercase 'Navbar'
+import TextCard from './UI/text'; 
+import Header from './pages/component/Header';
 
 function Home() {
   return (
     <HomeWrapper>
     
       <div className="container">
-      <Navbar/>   {/* Corrected usage of Navbar */}
+      <Navbar/> 
+      {/* Corrected usage of Navbar */}
+     
       </div>
     </HomeWrapper>
  
