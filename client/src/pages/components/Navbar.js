@@ -33,7 +33,7 @@ function NavbarComponent() { // Renamed to follow React naming conventions
 </Col>
         {/* SignIN Button on the Right */}
         <Col xs="auto">
-          <StyledButton onClick={() => navigate('/signin')}>Signin</StyledButton>
+          <StyledButton onClick={() => navigate('/signin')}><h1>🧑‍🦰</h1></StyledButton>
         </Col>
       </Row>
     </StyledNavbar>
@@ -74,7 +74,7 @@ const StyledButton = styled(Button)`
 const SearchButton = styled(Button)`
   background-color: transparent;
   border: none;
-  color: #6c757d;
+  color:rgb(40, 37, 37);
   font-size: 1.2rem;
   display: flex;
   align-items: center;
@@ -83,6 +83,6 @@ const SearchButton = styled(Button)`
   cursor: pointer;
 
   &:hover {
-    color: #495057;
+    color:rgb(198, 203, 207);
   }
 `;

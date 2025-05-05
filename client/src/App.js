@@ -1,26 +1,24 @@
-import React from 'react';
+import {React,useState} from 'react';
 import styled from 'styled-components';
 import './App.css';
 import Signin from './pages/auth/LoginPage';
 import OtpVerify from './pages/auth/otpVerifactionpage'; // Importing the OTP verification page
 import { Routes, Route } from 'react-router-dom';
-import Navbar from './pages/component/navbar'; // Updated import with uppercase 'Navbar'
-import TextCard from './UI/text'; 
-import Header from './pages/component/Header';
+import Navbar from './pages/components/Navbar'; // Importing the Navbar component
 
 function Home() {
-  return (
-    <HomeWrapper>
-    
-      <div className="container">
-      <Navbar/> 
-      {/* Corrected usage of Navbar */}
-     
-      </div>
-    </HomeWrapper>
+return(
+
+<HomeWrapper>
+  <Navbar/>
+</HomeWrapper>
+
+)
+;
+  };
+
  
-  );
-}
+
 
 function App() {
   return (
