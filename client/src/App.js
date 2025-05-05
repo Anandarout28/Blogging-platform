@@ -4,13 +4,15 @@ import './App.css';
 import Signin from './pages/auth/LoginPage';
 import OtpVerify from './pages/auth/otpVerifactionpage'; // Importing the OTP verification page
 import { Routes, Route } from 'react-router-dom';
-import Navbar from './pages/components/Navbar'; // Importing the Navbar component
-
+import  Navbar from './pages/navbar.js';
+import NavbarComponent from './pages/components/Header.js'; // Importing the Navbar component
+import Blog from './component/blog.js'; // Importing the Blog page
 function Home() {
 return(
 
 <HomeWrapper>
-  <Navbar/>
+<NavbarComponent />
+<Navbar />
 </HomeWrapper>
 
 )
@@ -24,6 +26,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/write" element={<Blog/>} />
       <Route path="/signin" element={<Signin />} />
       <Route path="/OtpVerify" element={<OtpVerify/>} />
     </Routes>
