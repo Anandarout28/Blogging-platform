@@ -6,7 +6,7 @@ import OtpVerify from './pages/auth/otpVerifactionpage'; // Importing the OTP ve
 import { Routes, Route } from 'react-router-dom';
 import  Navbar from './pages/navbar.js';
 import NavbarComponent from './pages/components/Header.js'; // Importing the Navbar component
-import Blog from './component/blog.js'; // Importing the Blog page
+import Editor from './component/blog.js'; // Importing the Blog page
 function Home() {
 return(
 
@@ -26,7 +26,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/write" element={<Blog/>} />
+      <Route path="/write" element={<Editor/>} />
       <Route path="/signin" element={<Signin />} />
       <Route path="/OtpVerify" element={<OtpVerify/>} />
     </Routes>
