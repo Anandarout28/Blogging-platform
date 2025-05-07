@@ -1,0 +1,71 @@
+/* navbar.css */
+
+.navbar {
+    display: flex;
+    width: 900px;
+    height: 200px;
+    position: relative;
+    margin: 0 auto;
+    top: -290px;
+    left: -60%;
+    right: 9%;
+    background-color:white;
+    box-shadow:0px 2px 0px 0px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4a00e0;
+    display: flex;
+    align-items: center;
+  }
+  
+  .add-button {
+    background-color: #c4dee4;
+    color: black;
+    border-radius: 50%;
+    margin-left: 10px;
+    padding: 2px 10px;
+    font-size: 30px;
+    cursor: pointer;
+  }
+  
+  .nav-items {
+    display: flex;
+    gap: 24px;
+  }
+  
+  .nav-items a {
+    text-decoration: none;
+    color: #333;
+    font-size: 18px;
+    margin-left: 50px;
+    margin-right: 100px;
+    font-weight: bold;
+    padding: 8px 12px;      
+    border-radius: 4px;
+    transition: color 0.2s ease;
+  }
+  
+  .nav-items a:hover {
+    color: #6a11cb;
+  }
+  
+  .profile {
+    background-color: #e0e7ff;
+    color: #4a00e0;
+    padding: 8px 12px;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 30px;
+    cursor: pointer;
+  }
+  .body {
+    margin: 0;
+    padding:0px;
+    font-family: sans-serif;
+    background-color: #ffffff;
+  }
+  

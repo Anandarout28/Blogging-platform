@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { InputOtp } from 'primereact/inputotp'; // Importing the InputOtp component from PrimeReact
+
 
 function OtpVerify() {
   const [step, setStep] = useState(1); // Step 1: Enter email, Step 2: Enter OTP
   const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState('');
+
 
   const handleEmailSubmit = (e) => {
     e.preventDefault();
@@ -12,13 +14,8 @@ function OtpVerify() {
     alert(`OTP sent to ${email}`);
     setStep(2); // Move to Step 2
   };
+  const [token, setTokens] = useState();
 
-  const handleOtpSubmit = (e) => {
-    e.preventDefault();
-    console.log('OTP Submitted:', otp);
-    // Add OTP verification logic here
-    alert('OTP Verified!');
-  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
@@ -52,21 +49,35 @@ function OtpVerify() {
       )}
       {step === 2 && (
         <>
+        <div 
+          style={{
+                padding: '9px',
+                fontSize: '16px',
+                
+                marginTop: '3px',
+                color: 'black',
+                border: 'none',
+                
+              }}>
           <h2>Enter OTP</h2>
-          <form onSubmit={handleOtpSubmit} style={{ display: 'flex', flexDirection: 'column', width: '300px' }}>
-            <input
-              type="text"
-              placeholder="Enter OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              style={{ padding: '10px', marginBottom: '20px', fontSize: '16px' }}
-              required
-            />
+          </div>
+          <div className="card flex justify-content-center"
+          style={{
+                padding: '9px',
+                fontSize: '16px',
+                marginTop: '20px',
+                color: 'white',
+                border: 'none',
+                cursor: 'pointer',
+              }} >
+            <InputOtp value={token} onChange={(e) => setTokens(e.value)} integerOnly/>
+        </div>
             <button
               type="submit"
               style={{
-                padding: '10px',
+                padding: '9px',
                 fontSize: '16px',
+                marginTop: '20px',
                 backgroundColor: '#4caf50',
                 color: 'white',
                 border: 'none',
@@ -75,7 +86,7 @@ function OtpVerify() {
             >
               Verify OTP
             </button>
-          </form>
+         
         </>
       )}
     </div>
