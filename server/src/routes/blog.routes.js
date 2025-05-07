@@ -12,11 +12,12 @@ import {
     togglePublishStatus,
     addComment,
     deleteComment,
+    editComment,
     toggleLike,
-    getAllBlogsAdmin,
-    adminDeleteBlog
+    // getAllBlogsAdmin,
+    // adminDeleteBlog
 
-} from "../controllers/user.controller.js";
+} from "../controllers/blog.controller.js";
 
 
 const router = Router();
@@ -27,6 +28,7 @@ router.route("/author/:userId").get(getBlogsByAuthor);
 router.route("/tag/:tag").get(getBlogsByTag);
 router.route("/category/:category").get(getBlogsByCategory);
 
+//secured routes
 router.route("/").post(verifyJWT, createBlog);
 router.route("/:id").put(verifyJWT, updateBlog);
 router.route("/:id").delete(verifyJWT, deleteBlog);
@@ -39,8 +41,8 @@ router.route("/:id/comment/:commentId").put(verifyJWT, editComment);
 router.route("/:id/like").post(verifyJWT, toggleLike);
 
 
-// Admin only
-router.route("/all").get(verifyJWT,authorizeRoles('admin'), getAllBlogsAdmin);
-router.route("/:id").delete(verifyJWT,authorizeRoles('admin'), adminDeleteBlog);
+// // Admin only routes
+// router.route("/all").get(verifyJWT,authorizeRoles('admin'), getAllBlogsAdmin);
+// router.route("/:id").delete(verifyJWT,authorizeRoles('admin'), adminDeleteBlog);
 
 export default router

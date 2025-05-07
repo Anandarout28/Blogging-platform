@@ -28,11 +28,11 @@ const generateAccessAndRefereshTokens = async(userId) =>{
 
 const registerUser = asyncHandler( async (req, res) => {
 
-    const {email, username, password } = req.body
+    const {email, name, password } = req.body
     //console.log("email: ", email);
 
     if (
-        [email, username, password].some((field) => field?.trim() === "")
+        [email, name, password].some((field) => field?.trim() === "")
     ) {
         throw new ApiError(400, "All fields are required")
     }
@@ -43,7 +43,7 @@ const registerUser = asyncHandler( async (req, res) => {
 
 
     const existedUser = await User.findOne({
-        $or: [{ username }, { email }]
+        $or: [{ name }, { email }]
     })
 
     if (existedUser) {
@@ -53,7 +53,7 @@ const registerUser = asyncHandler( async (req, res) => {
     const user = await User.create({
         email, 
         password,
-        username: username.toLowerCase()
+        name
     })
 
     const createdUser = await User.findById(user._id).select(
@@ -74,15 +74,15 @@ const registerUser = asyncHandler( async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) =>{
 
-    const {email, username, password} = req.body
+    const {email, name, password} = req.body
     // console.log(email);
 
-    if (!((username || email) && password)) {
+    if (!((name || email) && password)) {
         throw new ApiError(400, "username or email is required")
     }
 
     const user = await User.findOne({
-        $or: [{username}, {email}]
+        $or: [{name}, {email}]
     })
 
     if (!user) {
