@@ -4,8 +4,9 @@ import './App.css';
 import Signin from './pages/auth/LoginPage';
 import OtpVerify from './pages/auth/otpVerifactionpage'; // Importing the OTP verification page
 import { Routes, Route } from 'react-router-dom';
-import Navbar from './pages/component/navbar'; // Updated import with uppercase 'Navbar'
-
+import Navbar from './pages/navbar';
+import NavbarComponent from './pages/components/Header';
+import Blog from './component/blog'; // Importing the editor component
 function Home() {
 return(
 
@@ -19,13 +20,11 @@ return(
   };
 
  
-
-
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/write" element={<Editor/>} />
+      <Route path="/write" element={<Blog/>} />
       <Route path="/signin" element={<Signin />} />
       <Route path="/OtpVerify" element={<OtpVerify/>} />
     </Routes>
