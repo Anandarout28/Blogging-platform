@@ -15,7 +15,7 @@ const Navbar = () => {
       </div>
 
       <nav className="nav-items">
-        <a href="#" className="nav-item"><h2>Read blogs</h2></a>
+        <button className='nav-item' onClick={()=> navigate('/read')}><h2>Read blogs</h2></button>
         <a href="#" className="nav-item"><h2>Your blogs</h2></a>
       </nav>
 

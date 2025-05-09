@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./login.css";
 import * as Components from "./Components";
@@ -10,22 +10,8 @@ function Signin() {
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [error, setError] = React.useState('');
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    axios.post('http://localhost:8000/', {name,email,password})
-      .then((result) => console.log(result))
-      .catch((error) => console.log(error));
-
-    if (!email.includes('@')) {
-      alert('Please enter a valid email address.');
-      return;
-    }
-    if (password.length < 6) {
-      alert('Password must be at least 6 characters long.');
-      return;
-    }
-  };
+  const [error] = React.useState('');
+ 
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -39,11 +25,6 @@ function Signin() {
       return;
     }
     try {
-      const response = await axios.post('http://localhost:5000/api/register', {
-        name,
-        email,
-        password,
-      });
       alert('Registration successful! Please log in.');
       toggle(true); // Switch to Sign In form
     } catch (error) {
@@ -54,7 +35,7 @@ function Signin() {
   const handleSignIn = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/login', {
+      const response = await axios.post('http://localhost:8000/api/login', {
         email,
         password,
       });
