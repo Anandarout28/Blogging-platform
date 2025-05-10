@@ -3,10 +3,7 @@ import mongoose from "mongoose";
 const connectDB = async () => {
     try {
         // Use only MONGODB_URI since it already includes the database name
-        const connectionInstance = await mongoose.connect(process.env.MONGODB_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
+        const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URI}/${process.env.DB_NAME}`)
         console.log(`\n MongoDB connected !! DB HOST: ${connectionInstance.connection.host}`);
     }
     catch (error) {
