@@ -7,8 +7,8 @@ import { Routes, Route } from 'react-router-dom';
 import Footer from './pages/components/footer';
 import NavbarComponent from './pages/components/Header';
 import Blog from './component/BLOGS/blog';
-import Body from './pages/body';
-import Dashboard from './pages/dashboard'; 
+import Body from './pages/components/body';
+import Dashboard from './pages/components/dashboard'; 
 import  Read from   './component/BLOGS/read' // Importing the editor component
 function Home() {
 return(
@@ -22,6 +22,7 @@ return(
 )
 ;
   };
+
 
 
  

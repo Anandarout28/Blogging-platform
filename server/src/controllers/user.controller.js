@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken"
-import mongoose from "mongoose";
 import { User} from "../models/user.model.js"
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {ApiError} from "../utils/ApiError.js"
@@ -25,11 +24,10 @@ const generateAccessAndRefereshTokens = async(userId) =>{
 }
 
 
-
 const registerUser = asyncHandler( async (req, res) => {
 
     const {email, name, password } = req.body
-    //console.log("email: ", email);
+    console.log("email: ", email);
 
     if (
         [email, name, password].some((field) => field?.trim() === "")
@@ -75,7 +73,7 @@ const registerUser = asyncHandler( async (req, res) => {
 const loginUser = asyncHandler(async (req, res) =>{
 
     const {email, name, password} = req.body
-    // console.log(email);
+    console.log(email);
 
     if (!((name || email) && password)) {
         throw new ApiError(400, "username or email is required")

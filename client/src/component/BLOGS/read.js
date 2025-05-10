@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { CardTitle } from "../ui/card";
+
 const Read = () => {
     const [texts, setTexts] = useState([]);
   
@@ -15,7 +15,7 @@ const Read = () => {
     return (
       <div>
       
-        <CardTitle>Hii</CardTitle>
+        
   
         <h1>Text from Database</h1>
         {texts.map((text, index) => (
