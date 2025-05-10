@@ -1,7 +1,7 @@
 import React from 'react'
 import Navbar from './navbar'
-import NavbarComponent from './components/Header'
-import Footer from './components/footer'
+import NavbarComponent from './Header'
+import Footer from './footer'
 
 export default function dashboard() {
   return (

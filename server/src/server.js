@@ -7,13 +7,15 @@ dotenv.config({
     path: './.env',
 });
 
-
+app.get('/', (req, res) => {
+    res.send('Hello from server');
+});
 
 connectDB()
     .then(() => {
       
-        app.listen(process.env.PORT || 8000, () => {
-            console.log(`⚙️ Server is running at port : ${process.env.PORT || 8000}`);
+        app.listen(process.env.PORT || 3000, () => {
+            console.log(`⚙️ Server is running at port : ${process.env.PORT || 3000}`);
         });
     })
     .catch((err) => {

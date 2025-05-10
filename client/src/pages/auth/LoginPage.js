@@ -25,6 +25,11 @@ function Signin() {
       return;
     }
     try {
+      const response = await axios.post('http://localhost:8000/api/v1/users/register', {
+        name,
+        email,
+        password,
+      });
       alert('Registration successful! Please log in.');
       toggle(true); // Switch to Sign In form
     } catch (error) {
@@ -35,7 +40,7 @@ function Signin() {
   const handleSignIn = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8000/api/login', {
+      const response = await axios.post('http://localhost:8000/api/v1/users/login', {
         email,
         password,
       });
@@ -44,7 +49,6 @@ function Signin() {
       navigate('/dashboard'); // Navigate to dashboard on successful login
     } catch (error) {
       console.error(error.response?.data?.message || "An error occurred");
-      alert("Error: " + (error.response?.data?.message || "An error occurred"));
     }
   };
 
