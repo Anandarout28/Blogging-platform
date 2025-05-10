@@ -4,7 +4,6 @@ import styled from 'styled-components';
 const DynamicText = () => {
   const messages = ['Blogging', 'Learning', 'Coding', 'Building'];
   const [index, setIndex] = useState(0);
-
   useEffect(() => {
     const intervalId = setInterval(() => {
       setIndex(prevIndex => (prevIndex + 1) % messages.length);
@@ -27,7 +26,7 @@ const StyledText = styled.div`
   font-weight: bold;
   text-align: center;
   padding: 1rem;
-  color: #4caf50; /* Stylish green color */
+  color:rgb(12, 14, 12); /* Stylish green color */
   font-family: 'Arial', sans-serif;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Adds a shadow for style */
   animation: fadeIn 1s ease-in-out;

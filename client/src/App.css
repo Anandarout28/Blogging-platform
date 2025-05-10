@@ -108,3 +108,21 @@ body{
 @tailwind components;
 @tailwind utilities;
 
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: rgba(44, 187, 99, 0.35);
+  color: white;
+  text-align: center;
+}
+.ql-container {
+  font-family: 'Grotesk', sans-serif;
+  min-height: 300px;
+}
+
+.ql-toolbar {
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+}

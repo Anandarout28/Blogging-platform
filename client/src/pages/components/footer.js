@@ -1,23 +1,34 @@
 import React from "react";
+import styled from "styled-components";
+import '../../App.css' // Importing the CSS file for styling
 
 const Footer = () => {
   return (
-    <footer style={styles.footer}>
+    <div className="footer">
+    <StyledText>
       <p>&copy; {new Date().getFullYear()} Your Company. All rights reserved.</p>
-    </footer>
+    </StyledText>
+    </div>
   );
 };
+const StyledText = styled.div`
+  font-size: rem; /* Bigger text size */
+  text-align: center;
+  padding: 1rem;
+  color:rgb(12, 14, 12); /* Stylish green color */
+  font-family: 'Arial', sans-serif;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Adds a shadow for style */
+  animation: fadeIn 1s ease-in-out;
 
-const styles = {
-  footer: {
-    position: "fixed",
-    bottom: 0,
-    width: "100%",
-    backgroundColor: "green",
-    color: "white",
-    textAlign: "center",
-    padding: "10px",
-  },
-};
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+`;
+  
 
 export default Footer;
