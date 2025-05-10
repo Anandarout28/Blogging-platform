@@ -14,9 +14,9 @@ const DynamicText = () => {
   }, []);
 
   return (
-    <StyledText>
+  <div className='StyledText'>
       {messages[index]}
-    </StyledText>
+    </div>
   );
 };
 
@@ -26,10 +26,10 @@ const StyledText = styled.div`
   font-size: 3rem; /* Bigger text size */
   font-weight: bold;
   text-align: center;
-  padding: 1rem;
-  color: #4caf50; /* Stylish green color */
+  padding: 2px;
+  color:rgba(90, 189, 28, 0.68); /* Stylish green color */
   font-family: 'Arial', sans-serif;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Adds a shadow for style */
+  text-shadow: 2px 2px 4px rgba(16, 12, 12, 0.3); /* Adds a shadow for style */
   animation: fadeIn 1s ease-in-out;
 
   @keyframes fadeIn {

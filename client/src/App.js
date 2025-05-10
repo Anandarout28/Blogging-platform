@@ -1,30 +1,37 @@
-import {React,useState} from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import './App.css';
 import Signin from './pages/auth/LoginPage';
 import OtpVerify from './pages/auth/otpVerifactionpage'; // Importing the OTP verification page
 import { Routes, Route } from 'react-router-dom';
-import Navbar from './pages/navbar';
+import Footer from './pages/components/footer';
 import NavbarComponent from './pages/components/Header';
-import Blog from './component/blog'; // Importing the editor component
+import Blog from './component/BLOGS/blog';
+import Body from './pages/body';
+import Dashboard from './pages/dashboard'; 
+import  Read from   './component/BLOGS/read' // Importing the editor component
 function Home() {
 return(
 
 <HomeWrapper>
-<NavbarComponent />
-<Navbar />
+<Body/>
+<NavbarComponent/>
+<Footer/>
 </HomeWrapper>
 
 )
 ;
   };
 
+
  
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/write" element={<Blog/>} />
+      <Route path="/read" element={<Read/>} />
       <Route path="/signin" element={<Signin />} />
       <Route path="/OtpVerify" element={<OtpVerify/>} />
     </Routes>
