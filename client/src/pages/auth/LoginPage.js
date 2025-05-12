@@ -49,7 +49,7 @@ function Signin() {
       navigate('/dashboard'); // Navigate to dashboard
     } catch (error) {
       console.error('Login failed:', error.response?.data?.message || "An error occurred");
-      alert('' + (error.response?.data?.message || "Not Registered"));
+      
     }
   };
 
