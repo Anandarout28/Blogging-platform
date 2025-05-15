@@ -26,10 +26,10 @@ const generateAccessAndRefereshTokens = async(userId) =>{
 
 const registerUser = asyncHandler( async (req, res) => {
 
-    const {email, name, password } = req.body
+    const {email, name, password, role } = req.body
 
     if (
-        [email, name, password].some((field) => field?.trim() === "")
+        [email, name, password, role].some((field) => field?.trim() === "")
     ) {
         throw new ApiError(400, "All fields are required")
     }
@@ -38,6 +38,9 @@ const registerUser = asyncHandler( async (req, res) => {
         throw new ApiError(400, "@ is required in email");
     }
 
+    if (!["admin", "user"].includes(role.toLowerCase())) {
+    throw new ApiError(400, "Role must be either admin or user");
+}
 
     const existedUser = await User.findOne({
         $or: [{ name }, { email }]
@@ -50,7 +53,8 @@ const registerUser = asyncHandler( async (req, res) => {
     const user = await User.create({
         email, 
         password,
-        name
+        name,
+        role
     })
 
     const createdUser = await User.findById(user._id).select(

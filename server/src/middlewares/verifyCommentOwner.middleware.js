@@ -4,7 +4,6 @@ import {ApiError} from "../utils/ApiError.js";
 
 export const verifyCommentOwner = async (req, res, next) => {
   const { id, commentId } = req.params;
-  console.log(id, commentId);
   
 
   if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(commentId)) {

@@ -48,7 +48,7 @@ router.route("/search").get(getBlogBySearch)
 
 
 // // Admin only routes
-router.route("/all").get(verifyJWT,authorizeRoles('admin'), getAllBlogsAdmin);
-router.route("/:id").delete(verifyJWT,authorizeRoles('admin'), adminDeleteBlog);
+router.route("/admin/all").get(verifyJWT,authorizeRoles('admin'), getAllBlogsAdmin);
+router.route("/admin/:id").delete(verifyJWT,authorizeRoles('admin'), adminDeleteBlog);
 
 export default router

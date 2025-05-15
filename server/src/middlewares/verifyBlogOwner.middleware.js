@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import { ApiError } from "../utils/ApiError.js";
 
 export const verifyBlogOwner = async (req, res, next) => {
-  const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new ApiError(400, "Invalid blog ID");
