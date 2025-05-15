@@ -16,7 +16,9 @@ import {
     toggleLike,
     getAllBlogsAdmin,
     adminDeleteBlog,
-    getBlogBySearch
+    getBlogBySearch,
+    promoteToAdmin,
+    getAllUSer
 
 } from "../controllers/blog.controller.js";
 import { authorizeRoles } from "../middlewares/role.middleware.js";
@@ -48,7 +50,9 @@ router.route("/search").get(getBlogBySearch)
 
 
 // // Admin only routes
-router.route("/admin/all").get(verifyJWT,authorizeRoles('admin'), getAllBlogsAdmin);
+router.route("/admin/allBlogs").get(verifyJWT,authorizeRoles('admin'), getAllBlogsAdmin);
 router.route("/admin/:id").delete(verifyJWT,authorizeRoles('admin'), adminDeleteBlog);
+router.route("/admin/:id").put(verifyJWT,authorizeRoles('admin'), promoteToAdmin);
+router.route("/admin/allUsers").get(verifyJWT,authorizeRoles('admin'), getAllUSer);
 
 export default router
