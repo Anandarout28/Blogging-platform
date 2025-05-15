@@ -27,7 +27,6 @@ const generateAccessAndRefereshTokens = async(userId) =>{
 const registerUser = asyncHandler( async (req, res) => {
 
     const {email, name, password } = req.body
-    console.log("email: ", email);
 
     if (
         [email, name, password].some((field) => field?.trim() === "")

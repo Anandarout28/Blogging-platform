@@ -15,7 +15,8 @@ import {
     editComment,
     toggleLike,
     getAllBlogsAdmin,
-    adminDeleteBlog
+    adminDeleteBlog,
+    getBlogBySearch
 
 } from "../controllers/blog.controller.js";
 import { authorizeRoles } from "../middlewares/role.middleware.js";
@@ -37,11 +38,13 @@ router.route("/:id").put(verifyJWT,verifyBlogOwner, updateBlog);
 router.route("/:id").delete(verifyJWT,verifyBlogOwner, deleteBlog);
 router.route("/:id/publish").put(verifyJWT,verifyBlogOwner, togglePublishStatus);
 
-router.route("/:id/comment").post(verifyJWT,verifyCommentOwner, addComment);
+router.route("/:id/comment").post(verifyJWT, addComment);
 router.route("/:id/comment/:commentId").delete(verifyJWT,verifyCommentOwner, deleteComment);
 router.route("/:id/comment/:commentId").put(verifyJWT,verifyCommentOwner, editComment);
 
 router.route("/:id/like").post(verifyJWT, toggleLike);
+
+router.route("/search").get(getBlogBySearch)
 
 
 // // Admin only routes

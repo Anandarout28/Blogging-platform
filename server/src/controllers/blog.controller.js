@@ -26,7 +26,6 @@ const getAllPublishedBlogs = asyncHandler(async (req, res) => {
 
 const getBlogById = asyncHandler(async (req, res) => {
 	const { id } = req.params;
-	console.log(req.params);
 
 	if (!mongoose.Types.ObjectId.isValid(id)) {
 		throw new ApiError(400, "Invalid blog ID");
@@ -55,8 +54,8 @@ const getBlogsByAuthor = asyncHandler(async (req, res) => {
 		"name email"
 	);
 
-	if (!blogs) {
-		throw new ApiError(500, "Something went wrong while fetching blogs");
+	if (blogs.length <= 0) {
+		throw new ApiError(404, "No Blog found");
 	}
 
 	return res
@@ -402,6 +401,30 @@ const adminDeleteBlog = asyncHandler(async (req, res) => {
 		.json(new ApiResponse(200, deletedBlog, "Blog deleted successfully"));
 });
 
+const getBlogBySearch = asyncHandler( async (req, res ) => {
+    const searchKeyWord =  req.query.q?.trim();
+
+    if (!searchKeyWord) {
+        throw new ApiError(400, "Empty query");
+    }
+    
+    const blog = await Blog.find({
+        $or: [
+            { title: { $regex: searchKeyWord, $options: 'i' } },
+            { content: { $regex: searchKeyWord, $options: 'i' } },
+            { tags: { $regex: searchKeyWord, $options: 'i' } }
+        ]
+    });
+
+    if (blog.length === 0) {
+        throw new ApiError(404, "No blog is found");
+    }
+    
+    return res
+		.status(200)
+		.json(new ApiResponse(200, blog, "Similar blog searched successfully"));
+})
+
 export {
 	getAllPublishedBlogs,
 	getBlogById,
@@ -417,5 +440,6 @@ export {
 	editComment,
 	toggleLike,
 	getAllBlogsAdmin,
-	adminDeleteBlog
+	adminDeleteBlog,
+    getBlogBySearch
 };
