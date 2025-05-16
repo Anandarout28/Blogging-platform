@@ -66,14 +66,14 @@ const getBlogsByAuthor = asyncHandler(async (req, res) => {
 });
 
 const getBlogsByCategory = asyncHandler(async (req, res) => {
-    const category = req.query.c?.trim();
+	const category = req.query.c?.trim();
 
 	if (!category) {
 		throw new ApiError(400, "Empty query");
 	}
 
 	const blogs = await Blog.find({
-			 category: { $regex: category, $options: "i"  },
+		category: { $regex: category, $options: "i" },
 	});
 
 	if (blogs.length === 0) {
@@ -82,9 +82,9 @@ const getBlogsByCategory = asyncHandler(async (req, res) => {
 
 	return res
 		.status(200)
-		.json(new ApiResponse(200, blogs, "Similar blog searched successfully"));
-    
-    
+		.json(
+			new ApiResponse(200, blogs, "Similar blog searched successfully")
+		);
 });
 
 const getBlogsByTag = asyncHandler(async (req, res) => {
@@ -95,7 +95,7 @@ const getBlogsByTag = asyncHandler(async (req, res) => {
 	}
 
 	const blogs = await Blog.find({
-			 tags: { $regex: tag, $options: "i"  },
+		tags: { $regex: tag, $options: "i" },
 	});
 
 	if (blogs.length === 0) {
@@ -104,7 +104,9 @@ const getBlogsByTag = asyncHandler(async (req, res) => {
 
 	return res
 		.status(200)
-		.json(new ApiResponse(200, blogs, "Similar blog searched successfully"));
+		.json(
+			new ApiResponse(200, blogs, "Similar blog searched successfully")
+		);
 });
 
 // secured controllers
@@ -149,18 +151,48 @@ const createBlog = asyncHandler(async (req, res) => {
 });
 
 const updateBlog = asyncHandler(async (req, res) => {
+	const { id } = req.params;
+	const { title, content, coverImage, tags, category, ispublish } = req.body;
 
-	// const { blogId } = req.params;
-	// if (!mongoose.Types.ObjectId.isValid(blogId)) {
-	// 	throw new ApiError(400, "Invalid author ID");
-	// }
-	// const { title, content, coverImage, tag, category, ispublish } = req.body;
-	// if ([title, content, author].some((field) => field?.trim() === "")) {
-	// 	throw new ApiError(
-	// 		400,
-	// 		"Title, content, and author fields cannot be empty."
-	// 	);
-	// }
+	if (!mongoose.Types.ObjectId.isValid(id)) {
+		throw new ApiError(400, "Invalid blog ID");
+	}
+
+	const blog = await Blog.findById(id);
+	if (!blog) {
+		throw new ApiError(404, "Blog not found");
+	}
+
+	// Optional: Check if title is unchanged
+	if (title && blog.title === title) {
+		console.log("Title unchanged");
+	}
+
+	// Prepare updated fields only if they exist in the request
+	const updatedFields = {};
+
+	if (title) updatedFields.title = title;
+	if (content) updatedFields.content = content;
+	if (coverImage) updatedFields.coverImage = coverImage;
+	if (Array.isArray(tags)) updatedFields.tags = tags;
+	if (category) updatedFields.category = category;
+	if (typeof ispublish === "boolean") updatedFields.ispublish = ispublish;
+
+	// Update the blog
+	const updatedBlog = await Blog.findByIdAndUpdate(
+		id,
+		{ $set: updatedFields },
+		{ new: true }
+	);
+
+	if (!updatedBlog) {
+		throw new ApiError(500, "Blog update failed");
+	}
+
+	// Send response
+	return res
+		.status(200)
+		.json(new ApiResponse(200, updatedBlog, "Blog updated successfully"));
 });
 
 const deleteBlog = asyncHandler(async (req, res) => {
@@ -353,7 +385,9 @@ const getBlogBySearch = asyncHandler(async (req, res) => {
 
 	return res
 		.status(200)
-		.json(new ApiResponse(200, blogs, "Similar blog searched successfully"));
+		.json(
+			new ApiResponse(200, blogs, "Similar blog searched successfully")
+		);
 });
 
 // Admin Routes
@@ -410,10 +444,8 @@ const promoteToAdmin = asyncHandler(async (req, res) => {
 		.json(new ApiResponse(200, createdAdmin, "Admin created successfully"));
 });
 
-const getAllUSer = asyncHandler( async (req, res) =>{
-	const allUser = await User.find().select(
-        "-password -refreshToken"
-    );
+const getAllUSer = asyncHandler(async (req, res) => {
+	const allUser = await User.find().select("-password -refreshToken");
 
 	if (!allUser || allUser.length === 0) {
 		throw new ApiError(404, "No User is found");
@@ -422,7 +454,7 @@ const getAllUSer = asyncHandler( async (req, res) =>{
 	return res
 		.status(200)
 		.json(new ApiResponse(200, allUser, "All users fetched successfully"));
-})
+});
 
 export {
 	getAllPublishedBlogs,
@@ -442,5 +474,5 @@ export {
 	adminDeleteBlog,
 	getBlogBySearch,
 	promoteToAdmin,
-    getAllUSer,
+	getAllUSer,
 };
