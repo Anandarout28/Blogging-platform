@@ -29,10 +29,11 @@ import { verifyCommentOwner } from "../middlewares/verifyCommentOwner.middleware
 const router = Router();
 
 router.route("/").get(getAllPublishedBlogs);
-router.route("/:id").get(getBlogById);
+router.route("/search").get(getBlogBySearch)
+router.route("/category").get(getBlogsByCategory);
+router.route("/tag").get(getBlogsByTag);
 router.route("/author/:userId").get(getBlogsByAuthor);
-router.route("/tag/:tag").get(getBlogsByTag);
-router.route("/category/:category").get(getBlogsByCategory);
+router.route("/:id").get(getBlogById);
 
 //secured routes
 router.route("/").post(verifyJWT, createBlog);
@@ -46,7 +47,6 @@ router.route("/:id/comment/:commentId").put(verifyJWT,verifyCommentOwner, editCo
 
 router.route("/:id/like").post(verifyJWT, toggleLike);
 
-router.route("/search").get(getBlogBySearch)
 
 
 // // Admin only routes

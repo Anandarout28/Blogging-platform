@@ -66,80 +66,45 @@ const getBlogsByAuthor = asyncHandler(async (req, res) => {
 });
 
 const getBlogsByCategory = asyncHandler(async (req, res) => {
-	// const { category } = req.params;
-	// const page = parseInt(req.query.page) || 1;
-	// const limit = parseInt(req.query.limit) || 10;
-	// if (!category) {
-	// 	throw new ApiError(400, "Category is required");
-	// }
-	// const skip = (page - 1) * limit;
-	// const blogs = await Blog.find({ category })
-	// 	.sort({ createdAt: -1 })
-	// 	.skip(skip)
-	// 	.limit(limit)
-	// 	.populate("author", "name username");
-	// const total = await Blog.countDocuments({ category });
-	// return res.status(200).json(
-	// 	new ApiResponse(
-	// 		200,
-	// 		{
-	// 			blogs,
-	// 			pagination: {
-	// 				total,
-	// 				page,
-	// 				pages: Math.ceil(total / limit),
-	// 			},
-	// 		},
-	// 		"Blogs by category fetched"
-	// 	)
-	// );
+    const category = req.query.c?.trim();
+
+	if (!category) {
+		throw new ApiError(400, "Empty query");
+	}
+
+	const blogs = await Blog.find({
+			 category: { $regex: category, $options: "i"  },
+	});
+
+	if (blogs.length === 0) {
+		throw new ApiError(404, "No blog is found");
+	}
+
+	return res
+		.status(200)
+		.json(new ApiResponse(200, blogs, "Similar blog searched successfully"));
+    
+    
 });
 
 const getBlogsByTag = asyncHandler(async (req, res) => {
-	// const { tags } = req.query;
-	// if (!tags) {
-	//   throw new ApiError(400, "Tags query parameter is required");
-	// }
-	// // Convert to array, clean up, and lowercase to match DB storage
-	// const tagArray = Array.isArray(tags)
-	//   ? tags.map(tag => tag.toLowerCase().trim()).filter(Boolean)
-	//   : tags
-	//       .split(",")
-	//       .map(tag => tag.toLowerCase().trim())
-	//       .filter(Boolean);
-	// if (tagArray.length === 0) {
-	//   throw new ApiError(400, "At least one valid tag must be provided");
-	// }
-	// // Pagination
-	// const page = parseInt(req.query.page) || 1;
-	// const limit = parseInt(req.query.limit) || 10;
-	// const skip = (page - 1) * limit;
-	// const blogs = await Blog.find({
-	//   tags: { $in: tagArray },
-	//   ispublish: true,
-	// })
-	//   .sort({ createdAt: -1 })
-	//   .skip(skip)
-	//   .limit(limit)
-	//   .populate("author", "name email");
-	// const total = await Blog.countDocuments({
-	//   tags: { $in: tagArray },
-	//   ispublish: true,
-	// });
-	// return res.status(200).json(
-	//   new ApiResponse(
-	//     200,
-	//     {
-	//       blogs,
-	//       pagination: {
-	//         total,
-	//         page,
-	//         pages: Math.ceil(total / limit),
-	//       },
-	//     },
-	//     "Blogs fetched by tags"
-	//   )
-	// );
+	const tag = req.query.t?.trim();
+
+	if (!tag) {
+		throw new ApiError(400, "Empty query");
+	}
+
+	const blogs = await Blog.find({
+			 tags: { $regex: tag, $options: "i"  },
+	});
+
+	if (blogs.length === 0) {
+		throw new ApiError(404, "No blog is found");
+	}
+
+	return res
+		.status(200)
+		.json(new ApiResponse(200, blogs, "Similar blog searched successfully"));
 });
 
 // secured controllers
@@ -184,6 +149,7 @@ const createBlog = asyncHandler(async (req, res) => {
 });
 
 const updateBlog = asyncHandler(async (req, res) => {
+
 	// const { blogId } = req.params;
 	// if (!mongoose.Types.ObjectId.isValid(blogId)) {
 	// 	throw new ApiError(400, "Invalid author ID");
@@ -372,21 +338,22 @@ const getBlogBySearch = asyncHandler(async (req, res) => {
 		throw new ApiError(400, "Empty query");
 	}
 
-	const blog = await Blog.find({
+	const blogs = await Blog.find({
 		$or: [
 			{ title: { $regex: searchKeyWord, $options: "i" } },
 			{ content: { $regex: searchKeyWord, $options: "i" } },
 			{ tags: { $regex: searchKeyWord, $options: "i" } },
+			{ category: { $regex: searchKeyWord, $options: "i" } },
 		],
 	});
 
-	if (blog.length === 0) {
+	if (blogs.length === 0) {
 		throw new ApiError(404, "No blog is found");
 	}
 
 	return res
 		.status(200)
-		.json(new ApiResponse(200, blog, "Similar blog searched successfully"));
+		.json(new ApiResponse(200, blogs, "Similar blog searched successfully"));
 });
 
 // Admin Routes
