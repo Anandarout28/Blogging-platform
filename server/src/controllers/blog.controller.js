@@ -26,7 +26,6 @@ const getAllPublishedBlogs = asyncHandler(async (req, res) => {
 
 const getBlogById = asyncHandler(async (req, res) => {
 	const { id } = req.params;
-	console.log(req.params);
 
 	if (!mongoose.Types.ObjectId.isValid(id)) {
 		throw new ApiError(400, "Invalid blog ID");
@@ -55,8 +54,8 @@ const getBlogsByAuthor = asyncHandler(async (req, res) => {
 		"name email"
 	);
 
-	if (!blogs) {
-		throw new ApiError(500, "Something went wrong while fetching blogs");
+	if (blogs.length <= 0) {
+		throw new ApiError(404, "No Blog found");
 	}
 
 	return res
@@ -67,80 +66,47 @@ const getBlogsByAuthor = asyncHandler(async (req, res) => {
 });
 
 const getBlogsByCategory = asyncHandler(async (req, res) => {
-	// const { category } = req.params;
-	// const page = parseInt(req.query.page) || 1;
-	// const limit = parseInt(req.query.limit) || 10;
-	// if (!category) {
-	// 	throw new ApiError(400, "Category is required");
-	// }
-	// const skip = (page - 1) * limit;
-	// const blogs = await Blog.find({ category })
-	// 	.sort({ createdAt: -1 })
-	// 	.skip(skip)
-	// 	.limit(limit)
-	// 	.populate("author", "name username");
-	// const total = await Blog.countDocuments({ category });
-	// return res.status(200).json(
-	// 	new ApiResponse(
-	// 		200,
-	// 		{
-	// 			blogs,
-	// 			pagination: {
-	// 				total,
-	// 				page,
-	// 				pages: Math.ceil(total / limit),
-	// 			},
-	// 		},
-	// 		"Blogs by category fetched"
-	// 	)
-	// );
+	const category = req.query.c?.trim();
+
+	if (!category) {
+		throw new ApiError(400, "Empty query");
+	}
+
+	const blogs = await Blog.find({
+		category: { $regex: category, $options: "i" },
+	});
+
+	if (blogs.length === 0) {
+		throw new ApiError(404, "No blog is found");
+	}
+
+	return res
+		.status(200)
+		.json(
+			new ApiResponse(200, blogs, "Similar blog searched successfully")
+		);
 });
 
 const getBlogsByTag = asyncHandler(async (req, res) => {
-	// const { tags } = req.query;
-	// if (!tags) {
-	//   throw new ApiError(400, "Tags query parameter is required");
-	// }
-	// // Convert to array, clean up, and lowercase to match DB storage
-	// const tagArray = Array.isArray(tags)
-	//   ? tags.map(tag => tag.toLowerCase().trim()).filter(Boolean)
-	//   : tags
-	//       .split(",")
-	//       .map(tag => tag.toLowerCase().trim())
-	//       .filter(Boolean);
-	// if (tagArray.length === 0) {
-	//   throw new ApiError(400, "At least one valid tag must be provided");
-	// }
-	// // Pagination
-	// const page = parseInt(req.query.page) || 1;
-	// const limit = parseInt(req.query.limit) || 10;
-	// const skip = (page - 1) * limit;
-	// const blogs = await Blog.find({
-	//   tags: { $in: tagArray },
-	//   ispublish: true,
-	// })
-	//   .sort({ createdAt: -1 })
-	//   .skip(skip)
-	//   .limit(limit)
-	//   .populate("author", "name email");
-	// const total = await Blog.countDocuments({
-	//   tags: { $in: tagArray },
-	//   ispublish: true,
-	// });
-	// return res.status(200).json(
-	//   new ApiResponse(
-	//     200,
-	//     {
-	//       blogs,
-	//       pagination: {
-	//         total,
-	//         page,
-	//         pages: Math.ceil(total / limit),
-	//       },
-	//     },
-	//     "Blogs fetched by tags"
-	//   )
-	// );
+	const tag = req.query.t?.trim();
+
+	if (!tag) {
+		throw new ApiError(400, "Empty query");
+	}
+
+	const blogs = await Blog.find({
+		tags: { $regex: tag, $options: "i" },
+	});
+
+	if (blogs.length === 0) {
+		throw new ApiError(404, "No blog is found");
+	}
+
+	return res
+		.status(200)
+		.json(
+			new ApiResponse(200, blogs, "Similar blog searched successfully")
+		);
 });
 
 // secured controllers
@@ -165,15 +131,15 @@ const createBlog = asyncHandler(async (req, res) => {
 				.filter(Boolean)
 		: [];
 
-        const blog = await Blog.create({
-            title,
-            content,
-            coverImage,
-            author,
-            tags: tagArray,
-            category,
-            isPublished: String(ispublish).toLowerCase() === "true",
-          });
+	const blog = await Blog.create({
+		title,
+		content,
+		coverImage,
+		author,
+		tags: tagArray,
+		category,
+		isPublished: String(ispublish).toLowerCase() === "true",
+	});
 
 	if (!blog) {
 		throw new ApiError(500, "Something went wrong while creating the blog");
@@ -185,17 +151,48 @@ const createBlog = asyncHandler(async (req, res) => {
 });
 
 const updateBlog = asyncHandler(async (req, res) => {
-	// const { blogId } = req.params;
-	// if (!mongoose.Types.ObjectId.isValid(blogId)) {
-	// 	throw new ApiError(400, "Invalid author ID");
-	// }
-	// const { title, content, coverImage, tag, category, ispublish } = req.body;
-	// if ([title, content, author].some((field) => field?.trim() === "")) {
-	// 	throw new ApiError(
-	// 		400,
-	// 		"Title, content, and author fields cannot be empty."
-	// 	);
-	// }
+	const { id } = req.params;
+	const { title, content, coverImage, tags, category, ispublish } = req.body;
+
+	if (!mongoose.Types.ObjectId.isValid(id)) {
+		throw new ApiError(400, "Invalid blog ID");
+	}
+
+	const blog = await Blog.findById(id);
+	if (!blog) {
+		throw new ApiError(404, "Blog not found");
+	}
+
+	// Optional: Check if title is unchanged
+	if (title && blog.title === title) {
+		console.log("Title unchanged");
+	}
+
+	// Prepare updated fields only if they exist in the request
+	const updatedFields = {};
+
+	if (title) updatedFields.title = title;
+	if (content) updatedFields.content = content;
+	if (coverImage) updatedFields.coverImage = coverImage;
+	if (Array.isArray(tags)) updatedFields.tags = tags;
+	if (category) updatedFields.category = category;
+	if (typeof ispublish === "boolean") updatedFields.ispublish = ispublish;
+
+	// Update the blog
+	const updatedBlog = await Blog.findByIdAndUpdate(
+		id,
+		{ $set: updatedFields },
+		{ new: true }
+	);
+
+	if (!updatedBlog) {
+		throw new ApiError(500, "Blog update failed");
+	}
+
+	// Send response
+	return res
+		.status(200)
+		.json(new ApiResponse(200, updatedBlog, "Blog updated successfully"));
 });
 
 const deleteBlog = asyncHandler(async (req, res) => {
@@ -217,7 +214,7 @@ const deleteBlog = asyncHandler(async (req, res) => {
 });
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
-    const { id } = req.params;
+	const { id } = req.params;
 
 	if (!mongoose.Types.ObjectId.isValid(id)) {
 		throw new ApiError(400, "Invalid blog ID");
@@ -229,8 +226,8 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 		throw new ApiError(404, "Blog not found");
 	}
 
-    blog.isPublished = !blog.isPublished;
-    await blog.save(); 
+	blog.isPublished = !blog.isPublished;
+	await blog.save();
 
 	return res
 		.status(200)
@@ -324,8 +321,8 @@ const editComment = asyncHandler(async (req, res) => {
 	}
 
 	return res
-		.status(201)
-		.json(new ApiResponse(201, updatedBlog, "Comment edited successfully"));
+		.status(200)
+		.json(new ApiResponse(200, updatedBlog, "Comment edited successfully"));
 });
 
 const toggleLike = asyncHandler(async (req, res) => {
@@ -366,8 +363,37 @@ const toggleLike = asyncHandler(async (req, res) => {
 		.json(new ApiResponse(200, update, "Like toggled successfully"));
 });
 
+const getBlogBySearch = asyncHandler(async (req, res) => {
+	const searchKeyWord = req.query.q?.trim();
+
+	if (!searchKeyWord) {
+		throw new ApiError(400, "Empty query");
+	}
+
+	const blogs = await Blog.find({
+		$or: [
+			{ title: { $regex: searchKeyWord, $options: "i" } },
+			{ content: { $regex: searchKeyWord, $options: "i" } },
+			{ tags: { $regex: searchKeyWord, $options: "i" } },
+			{ category: { $regex: searchKeyWord, $options: "i" } },
+		],
+	});
+
+	if (blogs.length === 0) {
+		throw new ApiError(404, "No blog is found");
+	}
+
+	return res
+		.status(200)
+		.json(
+			new ApiResponse(200, blogs, "Similar blog searched successfully")
+		);
+});
+
+// Admin Routes
+
 const getAllBlogsAdmin = asyncHandler(async (req, res) => {
-    const allBlog = await Blog.find();
+	const allBlog = await Blog.find();
 
 	if (!allBlog || allBlog.length === 0) {
 		throw new ApiError(404, "No blogs is found");
@@ -375,17 +401,11 @@ const getAllBlogsAdmin = asyncHandler(async (req, res) => {
 
 	return res
 		.status(200)
-		.json(
-			new ApiResponse(
-				200,
-				allBlog,
-				"All blogs fetched successfully"
-			)
-		);
+		.json(new ApiResponse(200, allBlog, "All blogs fetched successfully"));
 });
 
 const adminDeleteBlog = asyncHandler(async (req, res) => {
-    const { id } = req.params;
+	const { id } = req.params;
 
 	if (!mongoose.Types.ObjectId.isValid(id)) {
 		throw new ApiError(400, "Invalid blog ID");
@@ -400,6 +420,40 @@ const adminDeleteBlog = asyncHandler(async (req, res) => {
 	return res
 		.status(200)
 		.json(new ApiResponse(200, deletedBlog, "Blog deleted successfully"));
+});
+
+const promoteToAdmin = asyncHandler(async (req, res) => {
+	const { id } = req.params;
+
+	if (!mongoose.Types.ObjectId.isValid(id)) {
+		throw new ApiError(400, "Invalid blog ID");
+	}
+
+	const createdAdmin = await User.findByIdAndUpdate(
+		id,
+		{ $set: { role: "admin" } },
+		{ new: true }
+	);
+
+	if (!createdAdmin) {
+		throw new ApiError(500, "something went wrong while creating admin");
+	}
+
+	return res
+		.status(200)
+		.json(new ApiResponse(200, createdAdmin, "Admin created successfully"));
+});
+
+const getAllUSer = asyncHandler(async (req, res) => {
+	const allUser = await User.find().select("-password -refreshToken");
+
+	if (!allUser || allUser.length === 0) {
+		throw new ApiError(404, "No User is found");
+	}
+
+	return res
+		.status(200)
+		.json(new ApiResponse(200, allUser, "All users fetched successfully"));
 });
 
 export {
@@ -417,5 +471,8 @@ export {
 	editComment,
 	toggleLike,
 	getAllBlogsAdmin,
-	adminDeleteBlog
+	adminDeleteBlog,
+	getBlogBySearch,
+	promoteToAdmin,
+	getAllUSer,
 };
