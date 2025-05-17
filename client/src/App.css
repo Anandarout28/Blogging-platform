@@ -10,9 +10,9 @@
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+@media (max-width: 768px) {
+  .menu-item {
+    display: block; /* stack vertically */
   }
 }
 
@@ -69,6 +69,8 @@ body{
   justify-content: left;
   align-items: left;
   height: 5vh;
+   width: 100%; /* or a fixed width like 1200px */
+  min-width: 300px
 }
 
 .search-bar {

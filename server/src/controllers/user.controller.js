@@ -6,28 +6,33 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 
 
-const generateAccessAndRefereshTokens = async(userId) =>{
+const generateAccessAndRefereshTokens = async (userId) => {
     try {
-        const user = await User.findById(userId)
-        const accessToken = user.generateAccessToken()
-        const refreshToken = user.generateRefreshToken()
+        console.log("Generating tokens for userId:", userId); // Debugging log
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new Error("User not found");
+        }
+        console.log("User found:", user); // Debugging log
 
-        user.refreshToken = refreshToken
-        await user.save({ validateBeforeSave: false })
+        const accessToken = user.generateAccessToken();
+        const refreshToken = user.generateRefreshToken();
 
-        return {accessToken, refreshToken}
+        user.refreshToken = refreshToken;
+        await user.save({ validateBeforeSave: false });
 
-
+        return { accessToken, refreshToken };
     } catch (error) {
-        throw new ApiError(500, "Something went wrong while generating referesh and access token")
+        console.error("Error in generateAccessAndRefereshTokens:", error.message); // Debugging log
+        throw new ApiError(500, "Something went wrong while generating referesh and access token");
     }
-}
+};
 
 
 const registerUser = asyncHandler( async (req, res) => {
 
-    const {email, name, password } = req.body
-    console.log("email: ", email);
+    const {email, name, password } = req.body;
+   
 
     if (
         [email, name, password].some((field) => field?.trim() === "")

@@ -10,7 +10,7 @@ import Blog from './component/BLOGS/blog';
 import Body from './pages/components/body';
 import Dashboard from './pages/components/dashboard'; 
 import  Read from   './component/BLOGS/read' 
-import ProtectedRoute from './Protectedroute'; // Importing the protected route component
+import ProtectedRoute from './Protectedroute';
 // Importing the editor component
 function Home() {
 return(
@@ -18,7 +18,6 @@ return(
 <HomeWrapper>
 <Header/>
 <Body/>
-
 <Footer/>
 </HomeWrapper>
 
@@ -34,11 +33,12 @@ function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route  path="/dashboard" element={
-         <ProtectedRoute>
+         
             <Dashboard />
-          </ProtectedRoute>} />
+         } />
     
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/read" element={<Read />} />
+ 
       <Route path="/write" element={<Blog/>} />
       <Route path="/read" element={<Read/>} />
       <Route path="/signin" element={<Signin />} />

@@ -1,12 +1,13 @@
 /* navbar.css */
 
-.navbar {
+.navbarx {
     display: flex;
+    max-width: fit-content;
     width: 900px;
-    height: 200px;
+    height: 100px;
     position: relative;
     margin: 0 auto;
-    top: -290px;
+    top: -390px;
     left: -60%;
     right: 9%;
     background-color:white;
@@ -17,7 +18,7 @@
   .logo {
     font-size: 24px;
     font-weight: bold;
-    color: #4a00e0;
+    color:none;
     display: flex;
     align-items: center;
   }
@@ -50,7 +51,7 @@
   }
   
   .nav-items a:hover {
-    color: #125f8f;
+    color: #b8d7eb;
   }
   
   .profile {
@@ -68,4 +69,26 @@
     font-family: sans-serif;
     background-color: #ffffff;
   }
-  
+.left-col {
+  position: fixed;
+  left: 0%; /* Adjust left margin */
+}
+
+.sea-bar {
+  position: fixed;
+  margin: 0 auto ;
+left: 15%; /* Center align */
+ /* Center align */
+}
+
+.right-col {
+   position: fixed;
+  margin: 0 auto ;
+  left: 50%; /* Adjust right margin */
+}
+.dyn{
+  position: fixed;
+  margin: 0 auto ;
+  left: 50%; /* Center align */
+  /* Adjust left margin */
+}
