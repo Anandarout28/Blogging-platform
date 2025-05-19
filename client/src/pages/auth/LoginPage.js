@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import "./login.css";
 import * as Components from "./Components";
 import axios from 'axios';
+import styled from 'styled-components';
 
 function Signin() {
   const [signIn, toggle] = React.useState(true);
@@ -10,11 +11,12 @@ function Signin() {
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [role, setRole] = React.useState('user'); // Default role
   const [error] = React.useState('');
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !role) {
       alert('Please fill in all fields.');
       return;
     }
@@ -27,6 +29,7 @@ function Signin() {
         name,
         email,
         password,
+        role, // Send role to backend
       });
       alert('Registration successful! Please log in.');
       toggle(true); // Switch to Sign In form
@@ -49,7 +52,6 @@ function Signin() {
       navigate('/dashboard'); // Navigate to dashboard
     } catch (error) {
       console.error('Login failed:', error.response?.data?.message || "An error occurred");
-      
     }
   };
 
@@ -82,6 +84,15 @@ function Signin() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          {/* Role selection */}
+          <Components.Select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            required
+          >
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </Components.Select>
           <Components.Button type="submit">Sign Up</Components.Button>
         </Components.Form>
       </Components.SignUpContainer>

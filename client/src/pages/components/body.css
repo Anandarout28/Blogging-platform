@@ -157,4 +157,24 @@ margin: 10px auto;
   text-shadow: 2px 2px 4px gray;
   }
   /* End Landing Page */
-  
+  /* navbar.css */
+
+
+  .left-col {
+  position: fixed;
+  margin-left: 20px; /* Adjust left margin */
+}
+
+.search-col {
+  display: flex;
+  margin-top: 20px;
+position: fixed;
+  margin: 0 auto;
+  left: 30%; /* Center align */
+}
+
+.right-col {
+  position: fixed;
+ left: 78%;
+  margin-right: 10px; /* Adjust right margin */
+}

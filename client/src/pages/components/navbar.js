@@ -3,25 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from 'primereact/button';
 import './navbar.css';
 
-const Navbar = () => {
+const NavbarD = () => {
   const navigate = useNavigate();
 
   return (
-    <header className="navbar">
-      <div className="logo">
+    <header className="navbarx">
+    <div className='nav-items'>
+      
       <span><h2>Write</h2></span> 
         <button onClick={() => navigate('/write')}> ➕ </button>
-       
-      </div>
+     
 
     
-            <Button className='add-button' onClick={()=> navigate()} label="" text >  <span><h2>Read</h2></span> </Button>
+            <Button className='add-button' onClick={()=> navigate('/read')} label="" text >  <span><h2>Read</h2></span> </Button>
             <Button className='add-button' onClick={()=> navigate()} text > <span><h2>For you</h2></span> </Button>
         <Button className='add-button' onClick={()=> navigate()}  text >  <span><h2>Following</h2></span> </Button>
         <Button className='add-button'onClick={()=> navigate()}  text >  <span><h2>Read</h2></span> </Button>
-      
+      </div>
     </header>
   );
 };
 
-export default Navbar;
+export default NavbarD;

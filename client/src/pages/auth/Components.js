@@ -181,3 +181,10 @@ export const Paragraph = styled.p`
   letter-spacing: 0.5px;
   margin: 20px 0 30px;
 `;
+export const Select = styled.select`
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+`;

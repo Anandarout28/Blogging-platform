@@ -1,27 +1,59 @@
 import React, { useState, useRef } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import axios from "axios"
 
 const TextEditor = () => {
   const [text, setText] = useState("");
+  const [heading, setHeading] = useState("");
+  const userId = localStorage.getItem("userId"); // State for heading
   const quillRef = useRef(null);
-
-  const handleDownload = () => {
-    const blob = new Blob([text], { type: "text/plain" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "document.txt";
-    link.click();
-  };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(text);
     alert("Text copied to clipboard!");
   };
 
+  // Send blog to backend
+  const handlePost = async () => {
+    if (!heading.trim() || !text.trim()) {
+      alert("Please enter both heading and blog body.");
+      return;
+    }
+    try {
+      await axios.post("http://localhost:8000/api/v1/blogs", {
+        title: heading,
+        content: text,
+        author: userId,
+      });
+      alert("Blog posted successfully!");
+      setHeading("");
+      setText("");
+    } catch (error) {
+      alert("Failed to post blog.");
+      console.error(error);
+    }
+  };
+
   return (
-    <div >
-      <span><h2 style={{ fontFamily: "Arial, sans-serif" }}>Write Your Blog</h2></span>
+    <div>
+      <span>
+        <h2 style={{ fontFamily: "Arial, sans-serif" }}>Write Your Blog</h2>
+      </span>
+      <input
+        type="text"
+        value={heading}
+        onChange={e => setHeading(e.target.value)}
+        placeholder="Enter blog heading..."
+        style={{
+          width: "900px",
+          padding: "10px",
+          marginBottom: "15px",
+          fontSize: "1.2rem",
+          borderRadius: "8px",
+          border: "1px solid #ccc"
+        }}
+      />
       <ReactQuill
         ref={quillRef}
         theme="snow"
@@ -39,7 +71,7 @@ const TextEditor = () => {
       />
       <div style={{ textAlign: "center" }}>
         <button
-          onClick={handleDownload}
+          onClick={handlePost}
           style={{ margin: "35px", padding: "10px 20px", borderRadius: "5px", backgroundColor: "#007bff", color: "white", border: "none", cursor: "pointer" }}>
           POST
         </button>

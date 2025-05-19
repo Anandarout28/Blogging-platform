@@ -6,32 +6,35 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 
 
-const generateAccessAndRefereshTokens = async(userId) =>{
+const generateAccessAndRefereshTokens = async (userId) => {
     try {
-        const user = await User.findById(userId)
-        const accessToken = user.generateAccessToken()
-        const refreshToken = user.generateRefreshToken()
+        console.log("Generating tokens for userId:", userId); // Debugging log
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new Error("User not found");
+        }
+        console.log("User found:", user); // Debugging log
 
-        user.refreshToken = refreshToken
-        await user.save({ validateBeforeSave: false })
+        const accessToken = user.generateAccessToken();
+        const refreshToken = user.generateRefreshToken();
 
-        return {accessToken, refreshToken}
+        user.refreshToken = refreshToken;
+        await user.save({ validateBeforeSave: false });
 
-
+        return { accessToken, refreshToken };
     } catch (error) {
-        throw new ApiError(500, "Something went wrong while generating referesh and access token")
+        console.error("Error in generateAccessAndRefereshTokens:", error.message); // Debugging log
+        throw new ApiError(500, "Something went wrong while generating referesh and access token");
     }
-}
+};
 
 
-const registerUser = asyncHandler( async (req, res) => {
+const registerUser = asyncHandler(async (req, res) => {
+    const { email, name, password, role } = req.body;
+    console.log("email: ", email);
 
-    const {email, name, password, role } = req.body
-
-    if (
-        [email, name, password, role].some((field) => field?.trim() === "")
-    ) {
-        throw new ApiError(400, "All fields are required")
+    if ([email, name, password, role].some((field) => field?.trim() === "")) {
+        throw new ApiError(400, "All fields are required");
     }
 
     if (!email.includes("@")) {
@@ -45,33 +48,37 @@ const registerUser = asyncHandler( async (req, res) => {
 }
 
     const existedUser = await User.findOne({
-        $or: [{ name }, { email }]
-    })
+        $or: [{ name }, { email }],
+    });
 
     if (existedUser) {
-        throw new ApiError(409, "User with email or username already exists")
+        throw new ApiError(409, "User with email or username already exists");
     }
 
     const user = await User.create({
-        email, 
+        email,
         password,
         name,
-        role
-    })
+        role,
+    });
 
     const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"
-    )
+    );
 
     if (!createdUser) {
-        throw new ApiError(500, "Something went wrong while registering the user")
+        throw new ApiError(
+            500,
+            "Something went wrong while registering the user"
+        );
     }
 
-    return res.status(201).json(
-        new ApiResponse(200, createdUser, "User registered Successfully")
-    )
-
-} ) 
+    return res
+        .status(201)
+        .json(
+            new ApiResponse(200, createdUser, "User registered Successfully")
+        );
+});
 
 
 
