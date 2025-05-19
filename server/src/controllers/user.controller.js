@@ -29,53 +29,54 @@ const generateAccessAndRefereshTokens = async (userId) => {
 };
 
 
-const registerUser = asyncHandler( async (req, res) => {
-
-    const {email, name, password } = req.body
+const registerUser = asyncHandler(async (req, res) => {
+    const { email, name, password, role } = req.body;
     console.log("email: ", email);
 
-    if (
-        [email, name, password, role].some((field) => field?.trim() === "")
-    ) {
-        throw new ApiError(400, "All fields are required")
+    if ([email, name, password, role].some((field) => field?.trim() === "")) {
+        throw new ApiError(400, "All fields are required");
     }
 
     if (!email.includes("@")) {
         throw new ApiError(400, "@ is required in email");
     }
 
-    if (!["admin", "user"].includes(role.toLowerCase())) {
+    if (!role || !["admin", "user"].includes(role.toLowerCase())) {
     throw new ApiError(400, "Role must be either admin or user");
 }
 
     const existedUser = await User.findOne({
-        $or: [{ name }, { email }]
-    })
+        $or: [{ name }, { email }],
+    });
 
     if (existedUser) {
-        throw new ApiError(409, "User with email or username already exists")
+        throw new ApiError(409, "User with email or username already exists");
     }
 
     const user = await User.create({
-        email, 
+        email,
         password,
         name,
-        role
-    })
+        role,
+    });
 
     const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"
-    )
+    );
 
     if (!createdUser) {
-        throw new ApiError(500, "Something went wrong while registering the user")
+        throw new ApiError(
+            500,
+            "Something went wrong while registering the user"
+        );
     }
 
-    return res.status(201).json(
-        new ApiResponse(200, createdUser, "User registered Successfully")
-    )
-
-} ) 
+    return res
+        .status(201)
+        .json(
+            new ApiResponse(200, createdUser, "User registered Successfully")
+        );
+});
 
 
 
