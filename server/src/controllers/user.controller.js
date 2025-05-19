@@ -38,8 +38,10 @@ const registerUser = asyncHandler( async (req, res) => {
         throw new ApiError(400, "@ is required in email");
     }
 
-    if (!["admin", "user"].includes(role.toLowerCase())) {
-    throw new ApiError(400, "Role must be either admin or user");
+    if (role) {
+        if (!["admin", "user"].includes(role.toLowerCase())) {
+        throw new ApiError(400, "Role must be either admin or user");
+    }
 }
 
     const existedUser = await User.findOne({
