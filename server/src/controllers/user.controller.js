@@ -3,6 +3,7 @@ import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 const generateAccessAndRefereshTokens = async (userId) => {
 	try {
@@ -58,12 +59,28 @@ const registerUser = asyncHandler(async (req, res) => {
 		throw new ApiError(409, "User with email or username already exists");
 	}
 
+	// Generate OTP
+	const otp = Math.floor(100000 + Math.random() * 900000).toString();
+	const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
 	const user = await User.create({
 		email,
 		password,
 		name,
 		role,
+		otp,
+		otpExpires,
+		emailVerified: false,
 	});
+
+	// Send OTP to user's email
+	const emailBody = `
+    <p>Hello ${name},</p>
+    <p>Your OTP for email verification is: <b>${otp}</b></p>
+    <p>This OTP will expire in 10 minutes.</p>
+  `;
+
+	await sendEmail(email, "Verify your Email - Blog Platform", emailBody);
 
 	const createdUser = await User.findById(user._id).select(
 		"-password -refreshToken"
@@ -82,6 +99,39 @@ const registerUser = asyncHandler(async (req, res) => {
 			new ApiResponse(200, createdUser, "User registered Successfully")
 		);
 });
+
+export const verifyOtp = async (req, res) => {
+	const { email, otp } = req.body;
+
+	if (!email || !otp) {
+		throw new ApiError(400, "Email and OTP are required");
+	}
+
+	const user = await User.findOne({ email });
+
+	if (!user) {
+		throw new ApiError(404, "User not found");
+	}
+
+	if (user.emailVerified) {
+		return res
+			.status(200)
+			.json(new ApiResponse(200, "Email is already verified"));
+	}
+
+	if (user.otp !== otp || user.otpExpires < Date.now()) {
+		throw new ApiError(400, "Invalid or expired OTP");
+	}
+
+	user.emailVerified = true;
+	user.otp = undefined;
+	user.otpExpires = undefined;
+	await user.save();
+
+	return res
+		.status(200)
+		.json(new ApiResponse(200, null, "Email verified successfully"));
+};
 
 const loginUser = asyncHandler(async (req, res) => {
 	const { email, name, password } = req.body;
@@ -191,7 +241,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 		const options = {
 			httpOnly: true,
 			secure: isProd, // ✅ false in dev, true in prod
-		sameSite: isProd ? "none" : "lax", // ✅ 'none' for HTTPS cross-origin, 'lax' for dev
+			sameSite: isProd ? "none" : "lax", // ✅ 'none' for HTTPS cross-origin, 'lax' for dev
 		};
 
 		const { accessToken, newRefreshToken } =
