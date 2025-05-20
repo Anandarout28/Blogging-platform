@@ -38,7 +38,13 @@ const userSchema = new Schema(
 		},
 		otpExpires: {
 			type: Date,
-		}
+		},
+		emailVerificationToken: {
+			type: String,
+		},
+		emailVerificationTokenExpires: {
+			type: Date,
+		},
 	},
 	{
 		timestamps: true, // ✅ Adds createdAt and updatedAt fields

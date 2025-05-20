@@ -4,6 +4,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import { generateEmailVerificationToken } from "../utils/emailVerificationToken.js";
 
 const generateAccessAndRefereshTokens = async (userId) => {
 	try {
@@ -62,9 +63,10 @@ const registerUser = asyncHandler(async (req, res) => {
 	// Generate OTP
 	const otp = Math.floor(100000 + Math.random() * 900000).toString();
 	const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
-
+    
+    
 	const user = await User.create({
-		email,
+        email,
 		password,
 		name,
 		role,
@@ -73,12 +75,43 @@ const registerUser = asyncHandler(async (req, res) => {
 		emailVerified: false,
 	});
 
-	// Send OTP to user's email
+    //Generate verification token
+    const token = generateEmailVerificationToken(user);
+    const tokenExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    user.emailVerificationToken = token
+    user.emailVerificationTokenExpires = tokenExpires
+	await user.save({ validateBeforeSave: false });
+
+
+	const verificationUrl = `${process.env.CORS_ORIGIN}/verify-email?token=${token}`;
+
+	// Send email with opt and verification token to user's email
 	const emailBody = `
-    <p>Hello ${name},</p>
-    <p>Your OTP for email verification is: <b>${otp}</b></p>
-    <p>This OTP will expire in 10 minutes.</p>
-  `;
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <h2 style="color: #4CAF50;">Email Verification - My Blog Platform</h2>
+
+    <p>Hi ${name},</p>
+
+    <p>Thank you for registering with <strong>My Blog Platform</strong>.</p>
+
+    <p>Your One-Time Password (OTP) for email verification is:</p>
+    <h3 style="background: #f0f0f0; padding: 10px; display: inline-block;">${otp}</h3>
+
+    <p>This OTP is valid for <strong>10 minutes</strong>.</p>
+
+    <p>Alternatively, you can verify your email directly by clicking the button below:</p>
+
+    <p>
+      <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
+    </p>
+
+    <p>If you did not request this, please ignore this email.</p>
+
+    <br/>
+    <p>Best regards,<br/>The My Blog Platform Team</p>
+    </div>
+    `;
 
 	await sendEmail(email, "Verify your Email - Blog Platform", emailBody);
 
@@ -100,32 +133,61 @@ const registerUser = asyncHandler(async (req, res) => {
 		);
 });
 
-export const verifyOtp = async (req, res) => {
-	const { email, otp } = req.body;
+const verifyEmail = async (req, res) => {
+	const { email, otp } = req.body || {};
+	const { token } = req.query;
 
-	if (!email || !otp) {
-		throw new ApiError(400, "Email and OTP are required");
+	let user;
+
+	// If OTP and email are provided, try OTP verification
+	if (email && otp) {
+		user = await User.findOne({ email });
+
+		if (!user) {
+			throw new ApiError(404, "User not found");
+		}
+
+		if (user.emailVerified) {
+			return res
+				.status(200)
+				.json(new ApiResponse(200, null, "Email is already verified"));
+		}
+
+		if (user.otp !== otp || user.otpExpires < Date.now()) {
+			throw new ApiError(400, "Invalid or expired OTP");
+		}
 	}
 
-	const user = await User.findOne({ email });
+	// If token is provided (via email link), verify using token
+	else if (token) {
+		user = await User.findOne({
+			emailVerificationToken: token,
+			emailVerificationTokenExpires: { $gt: Date.now() },
+		});
 
-	if (!user) {
-		throw new ApiError(404, "User not found");
+		if (!user) {
+			throw new ApiError(400, "Invalid or expired verification link");
+		}
+
+		if (user.emailVerified) {
+			return res
+				.status(200)
+				.json(new ApiResponse(200, null, "Email is already verified"));
+		}
+	} else {
+		throw new ApiError(
+			400,
+			"Either OTP + Email or Verification Token is required"
+		);
 	}
 
-	if (user.emailVerified) {
-		return res
-			.status(200)
-			.json(new ApiResponse(200, "Email is already verified"));
-	}
-
-	if (user.otp !== otp || user.otpExpires < Date.now()) {
-		throw new ApiError(400, "Invalid or expired OTP");
-	}
-
+	// Mark user as verified
 	user.emailVerified = true;
 	user.otp = undefined;
 	user.otpExpires = undefined;
+	user.emailVerificationToken = undefined;
+	user.emailVerificationTokenExpires = undefined;
+
 	await user.save();
 
 	return res
@@ -201,6 +263,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 		}
 	);
 
+	const isProd = process.env.NODE_ENV === "production";
+
 	const options = {
 		httpOnly: true,
 		secure: isProd, // ✅ false in dev, true in prod
@@ -237,6 +301,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 		if (incomingRefreshToken !== user?.refreshToken) {
 			throw new ApiError(401, "Refresh token is expired or used");
 		}
+
+		const isProd = process.env.NODE_ENV === "production";
 
 		const options = {
 			httpOnly: true,
@@ -294,4 +360,5 @@ export {
 	refreshAccessToken,
 	changeCurrentPassword,
 	getCurrentUser,
+    verifyEmail
 };
