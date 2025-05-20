@@ -56,17 +56,64 @@ const registerUser = asyncHandler(async (req, res) => {
         $or: [{ name }, { email }],
     });
 
-    if (existedUser) {
-        throw new ApiError(409, "User with email or username already exists");
-    }
+	if (existedUser) {
+		throw new ApiError(409, "User with email or username already exists");
+	}
 
-    const user = await User.create({
+	// Generate OTP
+	const otp = Math.floor(100000 + Math.random() * 900000).toString();
+	const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    
+    
+	const user = await User.create({
         email,
-        password,
-        name,
-        role,
-        emailVerified: true, // Always set as verified
-    });
+		password,
+		name,
+		role,
+		otp,
+		otpExpires,
+		emailVerified: false,
+	});
+
+    //Generate verification token
+    const token = generateEmailVerificationToken(user);
+    const tokenExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    user.emailVerificationToken = token
+    user.emailVerificationTokenExpires = tokenExpires
+	await user.save({ validateBeforeSave: false });
+
+
+	const verificationUrl = `${process.env.CORS_ORIGIN}/verify-email?token=${token}`;
+
+	// Send email with opt and verification token to user's email
+	const emailBody = `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <h2 style="color: #4CAF50;">Email Verification - My Blog Platform</h2>
+
+    <p>Hi ${name},</p>
+
+    <p>Thank you for registering with <strong>My Blog Platform</strong>.</p>
+
+    <p>Your One-Time Password (OTP) for email verification is:</p>
+    <h3 style="background: #f0f0f0; padding: 10px; display: inline-block;">${otp}</h3>
+
+    <p>This OTP is valid for <strong>10 minutes</strong>.</p>
+
+    <p>Alternatively, you can verify your email directly by clicking the button below:</p>
+
+    <p>
+      <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
+    </p>
+
+    <p>If you did not request this, please ignore this email.</p>
+
+    <br/>
+    <p>Best regards,<br/>The My Blog Platform Team</p>
+    </div>
+    `;
+
+	await sendEmail(email, "Verify your Email - Blog Platform", emailBody);
 
     const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"
@@ -239,47 +286,48 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 		throw new ApiError(401, "unauthorized request");
 	}
 
-    try {
-        const decodedToken = jwt.verify(
-            incomingRefreshToken,
-            process.env.REFRESH_TOKEN_SECRET
-        )
-    
-        const user = await User.findById(decodedToken?._id)
-    
-        if (!user) {
-            throw new ApiError(401, "Invalid refresh token")
-        }
-    
-        if (incomingRefreshToken !== user?.refreshToken) {
-            throw new ApiError(401, "Refresh token is expired or used")
-            
-        }
-    
-        const options = {
-            httpOnly: true,
-            secure: true
-        }
-    
-        const {accessToken, newRefreshToken} = await generateAccessAndRefereshTokens(user._id)
-    
-        return res
-        .status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", newRefreshToken, options)
-        .json(
-            new ApiResponse(
-                200, 
-                {accessToken, refreshToken: newRefreshToken},
-                "Access token refreshed"
-            )
-        )
-    } catch (error) {
-        throw new ApiError(401, error?.message || "Invalid refresh token")
-    }
+	try {
+		const decodedToken = jwt.verify(
+			incomingRefreshToken,
+			process.env.REFRESH_TOKEN_SECRET
+		);
 
-})
+		const user = await User.findById(decodedToken?._id);
 
+		if (!user) {
+			throw new ApiError(401, "Invalid refresh token");
+		}
+
+		if (incomingRefreshToken !== user?.refreshToken) {
+			throw new ApiError(401, "Refresh token is expired or used");
+		}
+
+		const isProd = process.env.NODE_ENV === "production";
+
+		const options = {
+			httpOnly: true,
+			secure: isProd, // ✅ false in dev, true in prod
+			sameSite: isProd ? "none" : "lax", // ✅ 'none' for HTTPS cross-origin, 'lax' for dev
+		};
+
+		const { accessToken, newRefreshToken } =
+			await generateAccessAndRefereshTokens(user._id);
+
+		return res
+			.status(200)
+			.cookie("accessToken", accessToken, options)
+			.cookie("refreshToken", newRefreshToken, options)
+			.json(
+				new ApiResponse(
+					200,
+					{ accessToken, refreshToken: newRefreshToken },
+					"Access token refreshed"
+				)
+			);
+	} catch (error) {
+		throw new ApiError(401, error?.message || "Invalid refresh token");
+	}
+});
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
 	const { oldPassword, newPassword } = req.body;
