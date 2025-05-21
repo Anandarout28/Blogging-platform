@@ -69,7 +69,7 @@ const items = [
         {/* Right-Aligned Content */}
         <Col xs="auto" className="right-col">
           <nav className="nav-items">
-            <StyledButton1 >
+            <StyledButton1 onClick={ ()=> navigate ('/dashboard')}>
               Home
             </StyledButton1>
             <StyledButton1 onClick={() => navigate('/write')} >

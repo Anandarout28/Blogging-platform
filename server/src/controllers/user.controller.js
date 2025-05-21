@@ -35,102 +35,55 @@ const generateAccessAndRefereshTokens = async (userId) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-	const { email, name, password, role } = req.body;
-	console.log("email: ", email);
+    const { email, name, password, role } = req.body;
+    console.log("email: ", email);
 
-	if ([email, name, password, role].some((field) => field?.trim() === "")) {
-		throw new ApiError(400, "All fields are required");
-	}
+    if ([email, name, password, role].some((field) => field?.trim() === "")) {
+        throw new ApiError(400, "All fields are required");
+    }
 
-	if (!email.includes("@")) {
-		throw new ApiError(400, "@ is required in email");
-	}
+    if (!email.includes("@")) {
+        throw new ApiError(400, "@ is required in email");
+    }
 
-	if (role) {
-		if (!["admin", "user"].includes(role.toLowerCase())) {
-			throw new ApiError(400, "Role must be either admin or user");
-		}
-	}
+    if (role) {
+        if (!["admin", "user"].includes(role.toLowerCase())) {
+            throw new ApiError(400, "Role must be either admin or user");
+        }
+    }
 
-	const existedUser = await User.findOne({
-		$or: [{ name }, { email }],
-	});
+    const existedUser = await User.findOne({
+        $or: [{ name }, { email }],
+    });
 
-	if (existedUser) {
-		throw new ApiError(409, "User with email or username already exists");
-	}
+    if (existedUser) {
+        throw new ApiError(409, "User with email or username already exists");
+    }
 
-	// Generate OTP
-	const otp = Math.floor(100000 + Math.random() * 900000).toString();
-	const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
-    
-    
-	const user = await User.create({
+    const user = await User.create({
         email,
-		password,
-		name,
-		role,
-		otp,
-		otpExpires,
-		emailVerified: false,
-	});
+        password,
+        name,
+        role,
+        emailVerified: true, // Always set as verified
+    });
 
-    //Generate verification token
-    const token = generateEmailVerificationToken(user);
-    const tokenExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    const createdUser = await User.findById(user._id).select(
+        "-password -refreshToken"
+    );
 
-    user.emailVerificationToken = token
-    user.emailVerificationTokenExpires = tokenExpires
-	await user.save({ validateBeforeSave: false });
+    if (!createdUser) {
+        throw new ApiError(
+            500,
+            "Something went wrong while registering the user"
+        );
+    }
 
-
-	const verificationUrl = `${process.env.CORS_ORIGIN}/verify-email?token=${token}`;
-
-	// Send email with opt and verification token to user's email
-	const emailBody = `
-    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-    <h2 style="color: #4CAF50;">Email Verification - My Blog Platform</h2>
-
-    <p>Hi ${name},</p>
-
-    <p>Thank you for registering with <strong>My Blog Platform</strong>.</p>
-
-    <p>Your One-Time Password (OTP) for email verification is:</p>
-    <h3 style="background: #f0f0f0; padding: 10px; display: inline-block;">${otp}</h3>
-
-    <p>This OTP is valid for <strong>10 minutes</strong>.</p>
-
-    <p>Alternatively, you can verify your email directly by clicking the button below:</p>
-
-    <p>
-      <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
-    </p>
-
-    <p>If you did not request this, please ignore this email.</p>
-
-    <br/>
-    <p>Best regards,<br/>The My Blog Platform Team</p>
-    </div>
-    `;
-
-	await sendEmail(email, "Verify your Email - Blog Platform", emailBody);
-
-	const createdUser = await User.findById(user._id).select(
-		"-password -refreshToken"
-	);
-
-	if (!createdUser) {
-		throw new ApiError(
-			500,
-			"Something went wrong while registering the user"
-		);
-	}
-
-	return res
-		.status(201)
-		.json(
-			new ApiResponse(200, createdUser, "User registered Successfully")
-		);
+    return res
+        .status(201)
+        .json(
+            new ApiResponse(200, createdUser, "User registered Successfully")
+        );
 });
 
 const verifyEmail = async (req, res) => {

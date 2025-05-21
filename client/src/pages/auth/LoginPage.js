@@ -11,8 +11,9 @@ function Signin() {
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [role, setRole] = React.useState('user'); // Default role
-  const [error] = React.useState('');
+  const [role, setRole] = React.useState('user');
+  const [error, setError] = React.useState('');
+  const [verificationNeeded, setVerificationNeeded] = React.useState(false);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -29,10 +30,10 @@ function Signin() {
         name,
         email,
         password,
-        role, // Send role to backend
+        role,
       });
       alert('Registration successful! Please log in.');
-      toggle(true); // Switch to Sign In form
+      toggle(true);
     } catch (error) {
       console.error('Registration failed:', error.response?.data?.message || error.message);
     }
@@ -40,24 +41,53 @@ function Signin() {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
+    setError('');
+    setVerificationNeeded(false);
     try {
       const response = await axios.post('http://localhost:8000/api/v1/users/login', {
         email,
         password,
       });
-      console.log('Login Response:', response.data); // Debugging log
-      localStorage.setItem('accessToken', response.data.accessToken); // Save token
+      // Check if email is verified
+      if (response.data.user && !response.data.user.emailVerified) {
+        setVerificationNeeded(true);
+        return;
+      }
+      localStorage.setItem('accessToken', response.data.accessToken);
       alert('Login successful!');
-      console.log('Navigating to dashboard...');
-      navigate('/dashboard'); // Navigate to dashboard
+      navigate('/dashboard');
     } catch (error) {
-      console.error('Login failed:', error.response?.data?.message || "An error occurred");
+      if (error.response && error.response.status === 401) {
+        setError("Invalid credentials. Please check your email and password.");
+      } else {
+        setError(error.response?.data?.message || "An error occurred");
+      }
+    }
+  };
+
+  // Optional: Resend verification email
+  const handleResendVerification = async () => {
+    try {
+      await axios.post('http://localhost:8000/api/v1/users/verify-email', {
+        email,
+      });
+      alert('Verification email resent. Please check your inbox.');
+    } catch (err) {
+      alert('Failed to resend verification email.');
     }
   };
 
   return (
     <Components.Container>
       {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      {/* Show verification needed message */}
+      {verificationNeeded && (
+        <div style={{ color: 'orange', marginBottom: '1rem' }}>
+          Your email is not verified. Please check your inbox for a verification link.<br />
+          <button onClick={handleResendVerification} style={{marginTop: '8px'}}>Resend Verification Email</button>
+        </div>
+      )}
 
       {/* Sign Up */}
       <Components.SignUpContainer signingIn={signIn}>
@@ -84,7 +114,6 @@ function Signin() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          {/* Role selection */}
           <Components.Select
             value={role}
             onChange={(e) => setRole(e.target.value)}

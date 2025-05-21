@@ -193,3 +193,9 @@ position: fixed;
   color: blue;
   cursor: pointer;
 }
+.homewrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  padding-top: 120px; /* Make room for navbar */
+}
