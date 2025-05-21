@@ -11,15 +11,17 @@ import Body from './pages/components/body';
 import Dashboard from './pages/components/dashboard'; 
 import  Read from   './component/BLOGS/read' 
 import ProtectedRoute from './Protectedroute';
+import Logout from './pages/auth/logout';
 // Importing the editor component
 function Home() {
 return(
-
+<div className="min-h-screen">
 <HomeWrapper>
 <Header/>
 <Body/>
 <Footer/>
 </HomeWrapper>
+</div>
 
 )
 ;
@@ -43,7 +45,7 @@ function App() {
       <Route path="/read" element={<Read />} />
  
       <Route path="/write" element={<Blog/>} />
-      <Route path="/read" element={<Read/>} />
+    <Route path="/logout" element={<Logout />} />
       <Route path="/signin" element={<Signin />} />
       <Route path="/OtpVerify" element={<OtpVerify/>} />
     </Routes>

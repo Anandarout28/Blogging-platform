@@ -12,29 +12,28 @@ import { IoNotifications } from "react-icons/io5";
 import { FiEdit } from "react-icons/fi";
 import './read.css'; // Import custom styles
 import { FaPlus } from "react-icons/fa6";
+import { FaGithub } from "react-icons/fa";
+import { FaLink } from "react-icons/fa";
 
 
-function Read() {
-  
-  const [blogs, setBlogs] = useState([]);
+const Read = () => {
 
- useEffect(() => {
-  const fetchBlogs = async () => {
-    try {
-      const token = localStorage.getItem('accessToken');
-      const res = await axios.get('http://localhost:8000/api/blogs', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+ 
+   const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axios.get('http://localhost:8000/api/v1/blogs')
+      .then((response) => {
+        setBlogs(response.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching blogs:', error);
+        setLoading(false);
       });
-      setBlogs(res.data);
-    } catch (err) {
-      console.error("Failed to fetch blogs", err);
-    }
-  };
+  }, []);
 
-  fetchBlogs();
-}, []);
 
   const navigate = useNavigate(); // Correctly use the hook
 const items = [
@@ -79,14 +78,13 @@ const items = [
             <StyledButton1 >
               <IoNotifications />
             </StyledButton1>
-            <StyledButton onClick={() => navigate('/signin')}>
+            <StyledButton >
               <h1>🧑‍🦰</h1>
             </StyledButton>
           </nav>
         </Col>
       </Row>
     </StyledNavbar>
-
     <header className="navbar" >
          
     <div className='nav-items' >
@@ -100,30 +98,50 @@ const items = [
         <Button className='add-button' onClick={()=> navigate()} text >  <span>AI</span> </Button>
          </div>   
         </header>
+ {/* Navbar stays fixed or imported as per layout */}
+      <section className="py-20 bg-gray-50 px-4" id="blogs">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold mb-8 text-center">Latest Blogs</h2>
 
-   
-
-  
-
-    <div className="all-blogs" style={{ maxWidth: "700px", margin: "0 auto" }}>
-      <h2>📚 All Blogs</h2>
-      {blogs.length === 0 ? (
-        <p>No blogs found.</p>
-      ) : (
-        blogs.map(blog => (
-          <div key={blog._id} style={{ border: '1px solid #ddd', marginBottom: '1rem', padding: '1rem', borderRadius: '8px' }}>
-            <h3>{blog.title}</h3>
-            <p>{blog.content}</p>
-            <p style={{ fontStyle: 'italic', fontSize: '0.9rem', color: '#555' }}>
-              Posted by: {blog.author?.username || 'Unknown'} on {new Date(blog.date).toLocaleDateString()}
-            </p>
-          </div>
-        ))
-      )}
-    </div>
-  
+          {loading ? (
+            <p className="text-center">Loading blogs...</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {blogs.map((blog) => (
+                <Card key={blog.id || blog._id}>
+                  <CardHeader>
+                    <CardTitle>{blog.title}</CardTitle>
+                    <CardDescription>{blog.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-700">{blog.content?.slice(0, 150)}...</p>
+                    <div className="flex gap-4 mt-3">
+                      {blog.github && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={blog.github} target="_blank" rel="noopener noreferrer">
+                            <FaGithub className="mr-2 h-4 w-4" />
+                            Code
+                          </a>
+                        </Button>
+                      )}
+                      {blog.demo && (
+                        <Button size="sm" asChild>
+                          <a href={blog.demo} target="_blank" rel="noopener noreferrer">
+                            <FaLink className="mr-2 h-4 w-4" />
+                            Demo
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
 <Navbar/>
-            </HomeWrapper>
+    </HomeWrapper>
        
   );
 }
@@ -216,4 +234,42 @@ const HomeWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
+`;
+const Card = styled.div`
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--card-bg);
+  color: var(--card-text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+`;
+
+const CardHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 1.5rem;
+`;
+
+const CardTitle = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+`;
+
+const CardDescription = styled.p`
+  font-size: 0.875rem;
+  color: var(--text-muted);
+`;
+
+const CardContent = styled.div`
+  padding: 1.5rem;
+  padding-top: 0;
+`;
+
+const CardFooter = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
+  padding-top: 0;
 `;

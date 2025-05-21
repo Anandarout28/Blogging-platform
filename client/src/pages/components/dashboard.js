@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { FaHome, FaEdit, FaBell, FaUser } from "react-icons/fa";
 import Footer from './footer'
 import Navbar from 'react-bootstrap/Navbar';
 import { useNavigate } from 'react-router-dom'; 
@@ -13,10 +14,16 @@ import './body.css';
 import NavbarD from './navbar';
 // Import custom styles
 export default function Dashboard() {
-    const navigate = useNavigate(); // Correctly use the hook
+    const navigate = useNavigate();
+    const handleLogout = () => {
+  localStorage.removeItem('accessToken');
+  // Optionally, redirect to login or home page
+  window.location.href = '/signin';
+}; // Correctly use the hook
    
   return (
         <HomeWrapper>
+       
  <StyledNavbar >
       <Row className="w-100 justify-content-between align-items-center padding-10px">
         {/* Left-Aligned Content */}
@@ -50,15 +57,19 @@ export default function Dashboard() {
             <StyledButton1 >
               <IoNotifications />
             </StyledButton1>
-            <StyledButton onClick={() => navigate('/signin')}>
-              <h1>🧑‍🦰</h1>
-            </StyledButton>
+
+          <StyledButton onClick={handleLogout} title="Logout">
+  <FaUser />
+</StyledButton>
+      
           </nav>
         </Col>
       </Row>
     </StyledNavbar>
 <Footer/>
 <NavbarD/>
+<Boarder/>
+         <VerticalNavbar/>
 </HomeWrapper>
   )
 }
@@ -150,5 +161,54 @@ const SearchButton = styled(Button)`
 
   &:hover {
     color: rgb(198, 203, 207);
+  }
+`;
+// Add this import at the top if not present
+
+
+// Add this styled component
+const VerticalNavbar = styled.div`
+  position: fixed;
+  top: -2%; /* below the horizontal navbar */
+  right: 1%;
+  
+  width: 5px;
+  height: calc(100vh - 80px);
+  background: #f8f9fa;
+  border-right: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 30px;
+  z-index: 101;
+  gap: 30px;
+`;
+const Boarder = styled.div`
+  position: fixed;
+  top: -2%; /* below the horizontal navbar */
+  Left: 1%;
+  
+  width: 5px;
+  height: calc(104vh - 90px);
+  background: #f8f9fa;
+  border-right: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 30px;
+  z-index: 101;
+  gap: 30px;
+`;
+
+const VerticalNavButton = styled.button`
+  background: none;
+  border: none;
+  margin: 10px 0;
+  font-size: 1.7rem;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.2s;
+  &:hover {
+    color: #4caf50;
   }
 `;
