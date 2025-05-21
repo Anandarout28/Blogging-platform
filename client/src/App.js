@@ -33,8 +33,11 @@ function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route  path="/dashboard" element={
+        <ProtectedRoute>
+        <Dashboard />
+      </ProtectedRoute>
          
-            <Dashboard />
+            
          } />
     
       <Route path="/read" element={<Read />} />

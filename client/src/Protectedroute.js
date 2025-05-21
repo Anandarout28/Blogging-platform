@@ -7,6 +7,7 @@ const isAuthenticated = () => {
 };
 
 const ProtectedRoute = ({ children }) => {
+  console.log("Token in ProtectedRoute:", localStorage.getItem('accessToken'));
   if (!isAuthenticated()) {
     return <Navigate to="/signin" replace />; // Redirect to Sign In if not authenticated
   }

@@ -18,18 +18,23 @@ function Read() {
   
   const [blogs, setBlogs] = useState([]);
 
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const res = await axios.get('http://localhost:8000/api/blogs');
-        setBlogs(res.data);
-      } catch (err) {
-        console.error("Failed to fetch blogs", err);
-      }
-    };
+ useEffect(() => {
+  const fetchBlogs = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const res = await axios.get('http://localhost:8000/api/blogs', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setBlogs(res.data);
+    } catch (err) {
+      console.error("Failed to fetch blogs", err);
+    }
+  };
 
-    fetchBlogs();
-  }, []);
+  fetchBlogs();
+}, []);
 
   const navigate = useNavigate(); // Correctly use the hook
 const items = [

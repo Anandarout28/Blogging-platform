@@ -15,25 +15,38 @@ const TextEditor = () => {
   };
 
   // Send blog to backend
-  const handlePost = async () => {
-    if (!heading.trim() || !text.trim()) {
-      alert("Please enter both heading and blog body.");
-      return;
-    }
-    try {
-      await axios.post("http://localhost:8000/api/v1/blogs", {
-        title: heading,
-        content: text,
-        author: userId,
-      });
-      alert("Blog posted successfully!");
-      setHeading("");
-      setText("");
-    } catch (error) {
-      alert("Failed to post blog.");
-      console.error(error);
-    }
-  };
+ const handlePost = async () => {
+  if (!heading.trim() || !text.trim()) {
+    alert("Please enter both heading and blog body.");
+    return;
+  }
+  try {
+   const token = localStorage.getItem("accessToken");
+if (!token) {
+  alert("You must be logged in to post a blog.");
+  return;
+}
+await axios.post(
+  "http://localhost:8000/api/v1/blogs",
+  {
+    title: heading,
+    content: text,
+    author: userId,
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
+    alert("Blog posted successfully!");
+    setHeading("");
+    setText("");
+  } catch (error) {
+    alert("Failed to post blog.");
+    console.error(error);
+  }
+};
 
   return (
     <div>

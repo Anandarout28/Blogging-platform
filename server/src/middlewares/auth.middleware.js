@@ -9,6 +9,10 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
             req.cookies?.accessToken ||
             req.header("Authorization")?.replace("Bearer ", "");
 
+        console.log("Token received in middleware:", token); // Add this line
+        console.log("Authorization header:", req.header("Authorization"));
+        console.log("Cookies:", req.cookies);
+
         if (!token) {
             throw new ApiError(401, "Unauthorized request: No token provided");
         }

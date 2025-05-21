@@ -40,7 +40,7 @@ function Header() { // Renamed to follow React naming conventions
  <Col xs="auto" className="right-col">
  <nav className="nav-items">
 
-         <StyledButton1 text>Home</StyledButton1>
+         <StyledButton1 onClick={()=> navigate ('/dashboard')} text>Home</StyledButton1>
             <StyledButton1 text >latest</StyledButton1>
             <StyledButton1  text >About us</StyledButton1>
             <StyledButton onClick={()=> navigate ('/signin')}  ><FaRegUser style={{color:'black'}}/></StyledButton>
