@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { generateEmailVerificationToken } from "../utils/emailVerificationToken.js";
+import bcrypt from "bcryptjs";
 
 const generateAccessAndRefereshTokens = async (userId) => {
 	try {
@@ -35,26 +36,26 @@ const generateAccessAndRefereshTokens = async (userId) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-    const { email, name, password, role } = req.body;
-    console.log("email: ", email);
+	const { email, name, password, role } = req.body;
+	console.log("email: ", email);
 
-    if ([email, name, password, role].some((field) => field?.trim() === "")) {
-        throw new ApiError(400, "All fields are required");
-    }
+	if ([email, name, password, role].some((field) => field?.trim() === "")) {
+		throw new ApiError(400, "All fields are required");
+	}
 
-    if (!email.includes("@")) {
-        throw new ApiError(400, "@ is required in email");
-    }
+	if (!email.includes("@")) {
+		throw new ApiError(400, "@ is required in email");
+	}
 
-    if (role) {
-        if (!["admin", "user"].includes(role.toLowerCase())) {
-            throw new ApiError(400, "Role must be either admin or user");
-        }
-    }
+	if (role) {
+		if (!["admin", "user"].includes(role.toLowerCase())) {
+			throw new ApiError(400, "Role must be either admin or user");
+		}
+	}
 
-    const existedUser = await User.findOne({
-        $or: [{ name }, { email }],
-    });
+	const existedUser = await User.findOne({
+		$or: [{ name }, { email }],
+	});
 
 	if (existedUser) {
 		throw new ApiError(409, "User with email or username already exists");
@@ -63,26 +64,29 @@ const registerUser = asyncHandler(async (req, res) => {
 	// Generate OTP
 	const otp = Math.floor(100000 + Math.random() * 900000).toString();
 	const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
-    
-    
+
+	const salt = await bcrypt.genSalt(10);
+	const encryptotp = await bcrypt.hash(otp, salt);
+	console.log(otp);
+	console.log(encryptotp);
+
 	const user = await User.create({
-        email,
+		email,
 		password,
 		name,
 		role,
-		otp,
+		otp: encryptotp,
 		otpExpires,
 		emailVerified: false,
 	});
 
-    //Generate verification token
-    const token = generateEmailVerificationToken(user);
-    const tokenExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+	//Generate verification token
+	const token = generateEmailVerificationToken(user);
+	const tokenExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
 
-    user.emailVerificationToken = token
-    user.emailVerificationTokenExpires = tokenExpires
+	user.emailVerificationToken = token;
+	user.emailVerificationTokenExpires = tokenExpires;
 	await user.save({ validateBeforeSave: false });
-
 
 	const verificationUrl = `${process.env.CORS_ORIGIN}/verify-email?token=${token}`;
 
@@ -115,31 +119,31 @@ const registerUser = asyncHandler(async (req, res) => {
 
 	await sendEmail(email, "Verify your Email - Blog Platform", emailBody);
 
-    const createdUser = await User.findById(user._id).select(
-        "-password -refreshToken"
-    );
+	const createdUser = await User.findById(user._id).select(
+		"-password -refreshToken -otp -otpExpires -emailVerificationToken -emailVerificationTokenExpires"
+	);
 
-    if (!createdUser) {
-        throw new ApiError(
-            500,
-            "Something went wrong while registering the user"
-        );
-    }
+	if (!createdUser) {
+		throw new ApiError(
+			500,
+			"Something went wrong while registering the user"
+		);
+	}
 
-    return res
-        .status(201)
-        .json(
-            new ApiResponse(200, createdUser, "User registered Successfully")
-        );
+	return res
+		.status(201)
+		.json(
+			new ApiResponse(200, createdUser, "User registered Successfully")
+		);
 });
 
-const verifyEmail = async (req, res) => {
+const verifyEmail = asyncHandler(async (req, res) => {
 	const { email, otp } = req.body || {};
 	const { token } = req.query;
 
 	let user;
 
-	// If OTP and email are provided, try OTP verification
+	// OTP + Email verification
 	if (email && otp) {
 		user = await User.findOne({ email });
 
@@ -153,12 +157,14 @@ const verifyEmail = async (req, res) => {
 				.json(new ApiResponse(200, null, "Email is already verified"));
 		}
 
-		if (user.otp !== otp || user.otpExpires < Date.now()) {
+		const isOtpValid = await bcrypt.compare(otp, user.otp);
+
+		if (!isOtpValid || user.otpExpires < Date.now()) {
 			throw new ApiError(400, "Invalid or expired OTP");
 		}
 	}
 
-	// If token is provided (via email link), verify using token
+	// Token verification (from email link)
 	else if (token) {
 		user = await User.findOne({
 			emailVerificationToken: token,
@@ -181,7 +187,7 @@ const verifyEmail = async (req, res) => {
 		);
 	}
 
-	// Mark user as verified
+	// ✅ Mark user as verified
 	user.emailVerified = true;
 	user.otp = undefined;
 	user.otpExpires = undefined;
@@ -193,7 +199,7 @@ const verifyEmail = async (req, res) => {
 	return res
 		.status(200)
 		.json(new ApiResponse(200, null, "Email verified successfully"));
-};
+});
 
 const loginUser = asyncHandler(async (req, res) => {
 	const { email, name, password } = req.body;
@@ -360,5 +366,5 @@ export {
 	refreshAccessToken,
 	changeCurrentPassword,
 	getCurrentUser,
-    verifyEmail
+	verifyEmail,
 };
