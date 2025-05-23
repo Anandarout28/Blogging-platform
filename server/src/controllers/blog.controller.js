@@ -131,6 +131,11 @@ const createBlog = asyncHandler(async (req, res) => {
 				.filter(Boolean)
 		: [];
 
+	const isPublished =
+		typeof ispublish === "undefined"
+			? true
+			: String(ispublish).toLowerCase() === "true";
+
 	const blog = await Blog.create({
 		title,
 		content,
@@ -138,7 +143,7 @@ const createBlog = asyncHandler(async (req, res) => {
 		author,
 		tags: tagArray,
 		category,
-		isPublished: String(ispublish).toLowerCase() === "true",
+		isPublished
 	});
 
 	if (!blog) {

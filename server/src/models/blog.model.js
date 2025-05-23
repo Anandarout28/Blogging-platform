@@ -35,7 +35,7 @@ const blogSchema = new Schema(
 		},
 		isPublished: {
 			type: Boolean,
-			default: false,
+			default: true,
 		},
 		likes: [
 			{
