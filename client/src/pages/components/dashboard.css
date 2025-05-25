@@ -88,7 +88,7 @@ body {
 
 .scrollable-card-area {
     position: relative;
-    width: calc(100% - -80px); /* Adjust total width accounting for padding/margin */
+    width: calc(100% - 900px); /* Adjust total width accounting for padding/margin */
    margin: 20px 10px -200px -540px;/* Top, Right, Bottom, Left */
     height: 900px; 
     overflow-y: auto; 
