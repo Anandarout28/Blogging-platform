@@ -12,8 +12,7 @@ import { IoNotifications } from "react-icons/io5";
 import { FiEdit } from "react-icons/fi";
 import './read.css'; // Import custom styles
 import { FaPlus } from "react-icons/fa6";
-import { FaGithub } from "react-icons/fa";
-import { FaLink } from "react-icons/fa";
+
 
 
 const Read = () => {
@@ -43,8 +42,9 @@ const items = [
         { label: 'Messages', icon: 'pi pi-inbox' }
     ];
   return (
-
     <HomeWrapper>
+   
+    <VerticalNavbar/>
     <StyledNavbar >
       <Row className="w-100 justify-content-between align-items-center padding-10px">
         {/* Left-Aligned Content */}
@@ -98,49 +98,73 @@ const items = [
         <Button className='add-button' onClick={()=> navigate()} text >  <span>AI</span> </Button>
          </div>   
         </header>
- {/* Navbar stays fixed or imported as per layout */}
-      <section className="py-20 bg-gray-50 px-4" id="blogs">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold mb-8 text-center">Latest Blogs</h2>
+{/* Main Content */}
 
-          {loading ? (
-            <p className="text-center">Loading blogs...</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {blogs.map((blog) => (
-                <Card key={blog.id || blog._id}>
-                  <CardHeader>
-                    <CardTitle>{blog.title}</CardTitle>
-                    <CardDescription>{blog.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-700">{blog.content?.slice(0, 150)}...</p>
-                    <div className="flex gap-4 mt-3">
-                      {blog.github && (
-                        <Button variant="outline" size="sm" asChild>
-                          <a href={blog.github} target="_blank" rel="noopener noreferrer">
-                            <FaGithub className="mr-2 h-4 w-4" />
-                            Code
-                          </a>
-                        </Button>
-                      )}
-                      {blog.demo && (
-                        <Button size="sm" asChild>
-                          <a href={blog.demo} target="_blank" rel="noopener noreferrer">
-                            <FaLink className="mr-2 h-4 w-4" />
-                            Demo
-                          </a>
-                        </Button>
-                      )}
+   <div class="scrollable-card-area">
+
+        <div class="section-content">
+            <div class="content-wrapper">
+                <div class="box box-1">
+                    <div class="first">
+                        <h2>Web development</h2>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    <div class="second">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                        <p><a href="#">Find out more</a></p>
+                    </div>
+                </div>
+                <div class="box box-2">
+                    <div class="first">
+                        <h2>Data analysis</h2>
+                    </div>
+                    <div class="second">
+                        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                        <p><a href="#">Find out more</a></p>
+                    </div>
+                </div>
+              
+                <div class="box box-1">                     <div class="first">
+                        <h2>App Development</h2>
+                    </div>
+                    <div class="second">
+                        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                        <p><a href="#">Learn More</a></p>
+                    </div>
+                </div>
+                <div class="box box-2">
+                    <div class="first">
+                        <h2>Cloud Solutions</h2>
+                    </div>
+                    <div class="second">
+                        <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                        <p><a href="#">Discover</a></p>
+                    </div>
+                </div>
+                <div class="box box-1">
+                    <div class="first">
+                        <h2>AI & Machine Learning</h2>
+                    </div>
+                    <div class="second">
+                        <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione.</p>
+                        <p><a href="#">Explore</a></p>
+                    </div>
+                    
+                </div>
+                  <div class="box box-1">
+                    <div class="first">
+                        <h2>AI & Machine Learning</h2>
+                    </div>
+                    <div class="second">
+                        <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione.</p>
+                        <p><a href="#">Explore</a></p>
+                    </div>
+                    
+                </div>
             </div>
-          )}
         </div>
-      </section>
-<Navbar/>
+    </div>
+
+
     </HomeWrapper>
        
   );
@@ -235,41 +259,19 @@ const HomeWrapper = styled.div`
   align-items: center;
   width: 100%;
 `;
-const Card = styled.div`
-  border-radius: 0.5rem;
-  border: 1px solid var(--border-color);
-  background-color: var(--card-bg);
-  color: var(--card-text);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-`;
 
-const CardHeader = styled.div`
+export const VerticalNavbar = styled.div`
+  position: fixed;
+  top:210px; /* below the horizontal navbar */
+  right: 30%;
+  color: rgb(255, 245, 245);
+  width: 5px;
+  height: 100%;
+  background: rgba(21, 32, 29, 0.49);
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
-  padding: 1.5rem;
-`;
-
-const CardTitle = styled.h3`
-  font-size: 1.5rem;
-  font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-`;
-
-const CardDescription = styled.p`
-  font-size: 0.875rem;
-  color: var(--text-muted);
-`;
-
-const CardContent = styled.div`
-  padding: 1.5rem;
-  padding-top: 0;
-`;
-
-const CardFooter = styled.div`
-  display: flex;
   align-items: center;
-  padding: 1.5rem;
-  padding-top: 0;
+  padding-top: 30px;
+  z-index: 101;
+  gap: 30px;
 `;

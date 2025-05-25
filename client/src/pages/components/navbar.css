@@ -121,10 +121,21 @@ left: 15%; /* Center align */
 }
 
 /* Main Content */
-.content {
-  padding-top: 160px; /* Prevents overlap with navbar */
+.content1 {
+  padding-top: 160px;
+  position: fixed; /* Prevents overlap with navbar */
   width: 100%;
-  max-width: 1300px;
+  max-width: 100px;
+  left: 10%;
+  top:10%;
+}
+.content2 {
+  padding-top: 160px;
+  position: fixed; /* Prevents overlap with navbar */
+  width: 100%;
+  max-width: 100px;
+  left: 30%;
+  top:10%;
 }
 
 /* Blog Sections */

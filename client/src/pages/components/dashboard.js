@@ -13,25 +13,46 @@ export default function Dashboard() {
       <NavbarD />
 
       {/* Main Content Container */}
-      <div className="content">
-        {["blog1", "blog2", "blog3", "blog4"].map((blogClass, index) => (
-          <Row key={index} className={`blog-section ${blogClass}`}>
-            <Col sm="6" className="card-container">
+      <div className="content1">
+        
+        
+            
               <Card body className="blog-card">
-                <CardTitle tag="h5">Special Title Treatment</CardTitle>
+                <CardTitle tag="h5">Say Goodbye To Axios In 2025</CardTitle>
                 <CardText>Supporting text for additional content.</CardText>
                 <Button color="primary">Go somewhere</Button>
               </Card>
-            </Col>
-            <Col sm="6" className="card-container">
+         
               <Card body className="blog-card">
-                <CardTitle tag="h5">Special Title Treatment</CardTitle>
+                <CardTitle tag="h5">Say Goodbye To Axios In 2025</CardTitle>
                 <CardText>Supporting text for additional content.</CardText>
                 <Button color="primary">Go somewhere</Button>
               </Card>
-            </Col>
-          </Row>
-        ))}
+           <Card body className="blog-card">
+                <CardTitle tag="h5">Say Goodbye To Axios In 2025</CardTitle>
+                <CardText>Supporting text for additional content.</CardText>
+                <Button color="primary">Go somewhere</Button>
+              </Card>
+         
+           
+      </div>
+      <div className="content2">
+<Card body className="blog-card">
+                <CardTitle tag="h5">Say Goodbye To Axios In 2025</CardTitle>
+                <CardText>Supporting text for additional content.</CardText>
+                <Button color="primary">Go somewhere</Button>
+              </Card>
+              <Card body className="blog-card">
+                <CardTitle tag="h5">Say Goodbye To Axios In 2025</CardTitle>
+                <CardText>Supporting text for additional content.</CardText>
+                <Button color="primary">Go somewhere</Button>
+              </Card>
+              <Card body className="blog-card">
+                <CardTitle tag="h5">Say Goodbye To Axios In 2025</CardTitle>
+                <CardText>Supporting text for additional content.</CardText>
+                <Button color="primary">Go somewhere</Button>
+              </Card>
+
       </div>
 
       <Footer />

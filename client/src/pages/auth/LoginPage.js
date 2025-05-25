@@ -59,7 +59,11 @@ function Signin() {
     } catch (error) {
       if (error.response && error.response.status === 401) {
         setError("Invalid credentials. Please check your email and password.");
-      } else {
+      } 
+      else if (error.response && error.response.status === 404) {
+        setError("User not found. Please register.");
+      }
+      else {
         setError(error.response?.data?.message || "An error occurred");
       }
     }
